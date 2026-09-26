@@ -1,0 +1,21 @@
+{
+  "name": "fable-remotion-starter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render src/index.ts EmotionalTitle out/title.mp4",
+    "render:all": "remotion render src/index.ts EmotionalTitle out/title.mp4 && remotion render src/index.ts AiClipWithCaption out/clip.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^5.5.0"
+  }
+}

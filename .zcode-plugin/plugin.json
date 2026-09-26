@@ -1,0 +1,10 @@
+{
+  "name": "fable",
+  "version": "0.23.0",
+  "description": "Fable: retrieve task-relevant agent sessions across all fable-family Hugging Face datasets; boost with local Laya triage + Headroom compression; route hard tasks into the /smart ledger loop; generate realistic, emotional video/animation via vendored ViMax, AI4Animation and Remotion engines (+ Runway cloud backend); self-improve via a local lesson corpus.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills",
+  "hooks": "./hooks/hooks.json"
+}

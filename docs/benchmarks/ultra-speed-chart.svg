@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"><rect width="860" height="400" rx="16" fill="#0b0e27"/><text x="40" y="48" font-size="20" font-weight="800" fill="#f5f7fc">⚡ ULTRA Speed Mode — real benchmark (46-run study)</text><text x="40" y="74" font-size="13" fill="#9aa4c8">Agent wall-clock, baseline vs fable (ULTRA routed) · lower is better</text>
+  <text x="40" y="124" font-size="13" font-weight="700" fill="#f5f7fc">T4 · file reorganizer</text>
+  <rect x="170" y="106" width="520" height="20" rx="5" fill="#94a3b8" opacity="0.85"/>
+  <text x="694" y="118" font-size="12" fill="#9aa4c8">65s</text>
+  <rect x="170" y="138" width="256" height="20" rx="5" fill="#ffc93c"/>
+  <text x="430" y="142" font-size="12" fill="#f5f7fc">32s</text>
+  <text x="158" y="142" text-anchor="end" font-size="12.5" font-weight="700" fill="#34d399">-51%</text><text x="770" y="128" font-size="13" font-weight="800" fill="#34d399">⚡ 2× FASTER</text>
+  <text x="40" y="194" font-size="13" font-weight="700" fill="#f5f7fc">S1 · quick fix</text>
+  <rect x="170" y="176" width="120" height="20" rx="5" fill="#94a3b8" opacity="0.85"/>
+  <text x="294" y="188" font-size="12" fill="#9aa4c8">15s</text>
+  <rect x="170" y="208" width="144" height="20" rx="5" fill="#38e0ff"/>
+  <text x="318" y="212" font-size="12" fill="#f5f7fc">18s</text>
+  <text x="158" y="212" text-anchor="end" font-size="12.5" font-weight="700" fill="#f87171">+20%</text><text x="770" y="198" font-size="13" font-weight="800" fill="#f87171">slower</text>
+  <text x="40" y="264" font-size="13" font-weight="700" fill="#f5f7fc">S3 · fast answer</text>
+  <rect x="170" y="246" width="240" height="20" rx="5" fill="#94a3b8" opacity="0.85"/>
+  <text x="414" y="258" font-size="12" fill="#9aa4c8">30s</text>
+  <rect x="170" y="278" width="400" height="20" rx="5" fill="#38e0ff"/>
+  <text x="574" y="282" font-size="12" fill="#f5f7fc">50s</text>
+  <text x="158" y="282" text-anchor="end" font-size="12.5" font-weight="700" fill="#f87171">+67%</text><text x="770" y="268" font-size="13" font-weight="800" fill="#f87171">slower</text>
+  <rect x="40" y="312" width="780" height="60" rx="12" fill="#161b3a" stroke="#3c4678"/>
+  <text x="60" y="340" font-size="13" fill="#9aa4c8">The single biggest ULTRA win in the study — file reorganization completed in half the time.
+  S1/S3 were speed-of-thought tasks where reading the pack cost more than it saved — disclosed honestly.</text>
+  <text x="40" y="378" font-size="11" fill="#94a3b8">source: benchmark_per_task.csv · 46 isolated runs · deterministic grading · 2026-09-25</text>
+</svg>

@@ -1,0 +1,6 @@
+mcp==1.30.0
+pydantic==2.13.5
+uvicorn==0.53.0
+# The decision-model itself (Mac/Apple Silicon only — depends on mlx):
+#   pip install git+https://github.com/mizorewww/laya-mlx.git@0a859518634112655cb97c745dbf04f5191aaf13#egg=laya_mlx
+# (scripts/setup.py installs this automatically into ~/.fable/venvs/laya-mlx)

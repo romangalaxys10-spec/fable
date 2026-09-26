@@ -1,0 +1,22 @@
+#1
+Download the "LaFan resolved" BVH Geno dataset from https://github.com/facebookresearch/ai4animationpy
+
+#2
+Extract and place the "bvh" folder inside the "MotionImport/Import_LaFan" folder
+
+#3
+>> convert bvh --definitions <PATH_TO_DEFINITIONS_FILE> <NAME_OF_JOINTS_LIST> --scale 0.01
+(i.e. convert bvh --definitions C:\Users\UserName\Desktop\ai4animationpy\Demos\_ASSETS_\Geno\Definitions.py FULL_BODY_NAMES --scale 0.01)
+
+#4
+>> python Program.py
+
+#5
+From this dataset you could now create a DataSampler for training (see AI demo folder) and access motion data via Dataset.LoadMotion(index) and operate on the data.
+
+#6
+Note that this is just an example how to import one specific dataset. The convert command points to a batch processor file inside ai4animation/Import/BatchConverter.py.
+You can also just run "convert bvh --scale 0.01" but this will import all joints and might cause much higher file sizes and impact the data loader during training.
+The converter will automatically work the same for bvh/fbx/glb files. However, to import different datasets correctly, you might need to adjust parameters for the
+modules when creating the dataset, particularly mirroring axis / corrections / contact thresholds etc. There might be several other things depending on each dataset
+and its formatting, and it's not guaranteed that this framework fully exhaustively covers all of them. Good luck!
