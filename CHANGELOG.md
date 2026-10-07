@@ -37,8 +37,8 @@ All notable changes to the Fable plugin and experience studio are documented in 
 - **Interactive Web Studio Workbench (`src/components/QAArchitectTab.tsx`)**:
   - Upgraded QA tab with live interactive diagnostic tools: `qa doctor` (100/100 health score), `qa risk` calculator with top contributors breakdown, `qa impact` targeted test subset selector, `qa triage` failure clusterer, `qa heal` self-healing proposal inspector, 4-quadrant strategy planner, and Layer A skills browser.
 - **Backend & MCP Server Integration**:
-  - Express API routes: `/api/qa/doctor`, `/api/qa/risk`, `/api/qa/impact`, `/api/qa/triage`, `/api/qa/heal`, `/api/qa/graph`, `/api/qa/generate`.
-  - MCP Tools: `qa_doctor`, `qa_analyze_risk`, `qa_impact_analysis`, `qa_triage_failure`, `qa_propose_test_heal`, `qa_evaluate_release`.
+  - Express API routes: `/api/qa/doctor`, `/api/qa/risk`, `/api/qa/impact`, `/api/qa/triage`, `/api/qa/heal`, `/api/qa/graph`, `/api/qa/generate`, `/api/qa/release`, `/api/qa/orchestrate`, `/api/qa/mcp`, `/api/qa/llm-eval`, `/api/qa/agent-eval`, `/api/token-efficiency/budget`, `/api/token-efficiency/compress`, `/api/token-efficiency/subagent`, `/api/token-efficiency/audit`.
+  - 11 MCP Tools: `discover_project`, `analyze_risk`, `list_relevant_tests`, `generate_tests`, `run_tests`, `get_failure_evidence`, `triage_failure`, `propose_test_heal`, `analyze_flake`, `generate_quality_report`, `evaluate_release`.
 
 ## [v1.3.0] — 2026-10-07 — QA Skills Framework & QA-Architect Automated Routing
 
