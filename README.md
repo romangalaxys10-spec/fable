@@ -185,6 +185,67 @@ python3 scripts/token_efficiency.py audit_read --file "src/server.ts" --lines 35
 
 ---
 
+## 🌐 Smart Online Dataset Retrieval Engine (`scripts/retrieve.js`)
+
+Fable dynamically fetches task-relevant prior agent problem-solving sessions from online **Hugging Face Datasets** in real time — **requiring zero API keys and zero model fine-tuning**.
+
+```
+incoming task ──▶ scripts/retrieve.js ──▶ datasets-server.huggingface.co/rows
+                        │
+                        ▼
+           normalize heterogeneous schemas
+                        │
+                        ▼
+            TF-IDF + Bigram semantic rank
+                        │
+                        ▼
+     feed into Laya triage & Headroom compression (~44% token savings)
+```
+
+### 1. Curated Online Datasets Registry
+
+Fable natively connects to 5 curated Hugging Face trace repositories via the public `datasets-server.huggingface.co` REST API:
+
+| Dataset | Size / Rows | Data Type | What Your Agent Learns |
+|---|---|---|---|
+| [`armand0e/claude-fable-5-claude-code`](https://huggingface.co/datasets/armand0e/claude-fable-5-claude-code) | 63 sessions | Raw Claude Code sessions | Exact tool-call sequences, CLI command patterns, and terminal error recovery |
+| [`saidutta69/fable-5-premium`](https://huggingface.co/datasets/saidutta69/fable-5-premium) | 11,000 sessions | Filtered SFT sessions | High-quality reasoning paths, code refactoring patterns, and architectural decisions |
+| [`Crownelius/Complete-FABLE.5-traces-2M`](https://huggingface.co/datasets/Crownelius/Complete-FABLE.5-traces-2M) | 22,400 traces | Deduped reasoning rows | Broad algorithmic problem solving, concurrency deadlock fixes, and edge cases |
+| [`MoreThought/Fable-5.1-Max-Reasoning-Filtered-5000x`](https://huggingface.co/datasets/MoreThought/Fable-5.1-Max-Reasoning-Filtered-5000x) | 5,000 rows | Max-Reasoning filtered | Deep multi-step verification and complex logic debugging |
+| [`kelexine/fable-5-sft-traces`](https://huggingface.co/datasets/kelexine/fable-5-sft-traces) | 1,200 traces | SFT with task metadata | Structured thinking tokens categorized by domain (`web`, `api`, `refactor`, `ops`) |
+
+### 2. Smart Normalization & Semantic Ranking
+- **Zero API Keys**: Uses public HTTPS endpoints (`https://datasets-server.huggingface.co/rows?dataset=...`).
+- **Schema Normalization**: Adapts disparate column structures (e.g. `messages`, `row_json`, `promptText`, `thinking`) into a unified internal representation `{promptText, docText, errors[]}` before ranking.
+- **Bigram & TF-IDF Scoring**: Scores retrieved rows against the user's task prompt, surfacing the most relevant prior bug-fixes and session transcripts.
+- **Dynamic Online Discovery (`--discover`)**: Automatically scans the Hugging Face Hub API for newly published community `fable*` trace datasets and caches them in `~/.fable/discovery.json` (refreshed every 24 hours).
+
+### 3. Dual-Accelerator Boost Pipeline (`scripts/boost/boost.py`)
+Retrieved online traces pass directly into Fable's dual local accelerators:
+1. **Laya MLX Triage** (macOS Apple Silicon): Fast on-device neural pass (~10–40ms) scoring candidate traces before ingestion.
+2. **Headroom Neural Compression**: Compresses raw verbose session transcripts by **~42–44%** before prompt injection, eliminating token bloat.
+
+### 4. CLI Retrieval Usage
+
+```bash
+# Retrieve top relevant traces across all 5 online datasets
+node scripts/retrieve.js "Fix race condition in async streaming queue" --top 5
+
+# Retrieve 2 traces per dataset with full prompt and code transcripts
+node scripts/retrieve.js "Implement OAuth PKCE login flow" --per-dataset 2 --include-full-text
+
+# Query a specific dataset directly
+node scripts/retrieve.js "Docker compose Postgres healthcheck" --dataset armand0e/claude-fable-5-claude-code
+
+# Discover newly published fable datasets on Hugging Face Hub
+node scripts/retrieve.js "Kubernetes ingress SSL" --discover
+
+# List all supported built-in and discovered datasets
+node scripts/retrieve.js --list-datasets
+```
+
+---
+
 ## 💻 Web Studio & Agent Workbench (`npm run dev`)
 
 Fable ships with a full-stack interactive **Studio Workbench** running on port 3000 (React 18 + Tailwind CSS + Express + Vite):
