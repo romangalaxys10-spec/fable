@@ -28,6 +28,7 @@ All notable changes to the Fable plugin and experience studio are documented in 
   - **`mode-donut.svg`**: Fixed label overlap where legend text collided with the donut center (`x=330` on a center of `cx=300`); redesigned with clean right-aligned legend and center stat.
   - **`corpus-growth.svg`**: Upgraded from flat polyline to area-gradient fill with milestone callouts (D4←D1, L4←L1, X3←T3, S3←T3).
   - **`ultra-speed-chart.svg`**: Upgraded to dark theme styling, rounded gradient bars, and clean comparison cards with honest disclosures.
+  - **Empirical Benchmarks Rewiring**: Completely rewired and expanded the 46-run study analysis in `README.md` and the Studio UI with a comprehensive per-task performance matrix (`T4`, `D4`, `L4`, `X3`, `S1`, `S3`), token economy breakdown, compounding transfer mapping, and reproducibility guide.
 - **Repository Hygiene**:
   - Removed accidental stray file `/-` left from curl redirect.
   - Removed redundant `scripts/.gitkeep`.

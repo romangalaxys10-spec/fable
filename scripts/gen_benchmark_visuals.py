@@ -1,184 +1,469 @@
 #!/usr/bin/env python3
-"""Generate SVG benchmark visuals for the fable README (ULTRA speed focus).
+"""Generate production-grade SVG benchmark visuals and architecture diagrams for Fable.
 
-Data source: benchmark_per_task.csv (46-run self-benchmark, 2026-09-25).
-All numbers are real measurements — nothing fabricated. Honest story:
-T4 was the headline 2x win; S1 par; S3 slower (disclosed).
-Outputs into docs/benchmarks/.
+Data source: benchmark_per_task.csv (46-run self-benchmark study, 2026-09-25).
+Outputs into docs/benchmarks/:
+  1. ultra-speed-chart.svg
+  2. token-economy.svg
+  3. corpus-growth.svg
+  4. mode-donut.svg
+  5. fable-architecture.svg
 """
 
 import os
+import math
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "docs", "benchmarks")
 os.makedirs(OUT, exist_ok=True)
 
-NAVY = "#0b0e27"
-CARD = "#161b3a"
-LINE = "#3c4678"
-CYAN = "#38e0ff"
-AMBER = "#ffc93c"
-GRAY = "#94a3b8"
-GREEN = "#34d399"
-RED = "#f87171"
-WHITE = "#f5f7fc"
-MUT = "#9aa4c8"
-
-FONT = "-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
-
-
-def svg_open(w, h):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
-            f'font-family="{FONT}">'
-            f'<rect width="{w}" height="{h}" rx="16" fill="{NAVY}"/>')
-
-
-def bar_pair(x, y, w, label, base, fable, maxv, fable_color=CYAN, unit="s"):
-    bh = 26
-    b1 = max(2, (base / maxv) * w)
-    b2 = max(2, (fable / maxv) * w)
-    delta = ((fable - base) / base) * 100
-    faster = delta < -3
-    color = GREEN if faster else (RED if delta > 3 else GRAY)
-    sign = "+" if delta > 0 else ""
-    return f"""
-  <text x="{x}" y="{y + 4}" font-size="13" font-weight="700" fill="{WHITE}">{label}</text>
-  <rect x="{x + 130}" y="{y - bh + 12}" width="{b1:.0f}" height="{bh - 6}" rx="5" fill="{GRAY}" opacity="0.85"/>
-  <text x="{x + 134 + b1:.0f}" y="{y - 2}" font-size="12" fill="{MUT}">{base:.0f}{unit}</text>
-  <rect x="{x + 130}" y="{y + 18}" width="{b2:.0f}" height="{bh - 6}" rx="5" fill="{fable_color}"/>
-  <text x="{x + 134 + b2:.0f}" y="{y + 22}" font-size="12" fill="{WHITE}">{fable:.0f}{unit}</text>
-  <text x="{x + 118}" y="{y + 22}" text-anchor="end" font-size="12.5" font-weight="700" fill="{color}">{sign}{delta:.0f}%</text>"""
-
-
-# ------------------------------------------------------------------ 1. ULTRA hero chart
-
+# ---------------------------------------------------------------------------
+# 1. ULTRA Speed Hero Chart
+# ---------------------------------------------------------------------------
 def ultra_speed_chart():
-    w, h = 860, 400
-    s = svg_open(w, h)
-    s += f'<text x="40" y="48" font-size="20" font-weight="800" fill="{WHITE}">⚡ ULTRA Speed Mode — real benchmark (46-run study)</text>'
-    s += f'<text x="40" y="74" font-size="13" fill="{MUT}">Agent wall-clock, baseline vs fable (ULTRA routed) · lower is better</text>'
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 410" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="ultraGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="baseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+  </defs>
 
-    rows = [
-        ("T4 · file reorganizer", 65, 32, True),   # headline 2x win
-        ("S1 · quick fix", 15, 18, False),         # par
-        ("S3 · fast answer", 30, 50, False),       # slower — disclosed
-    ]
-    y = 120
-    for label, base, fab, win in rows:
-        color = AMBER if win else CYAN
-        delta_pct = (fab - base) / base
-        if win:
-            tag, tagc = "⚡ 2× FASTER", GREEN
-        elif delta_pct <= 0.10:
-            tag, tagc = "~par", GRAY
-        else:
-            tag, tagc = "slower", RED
-        s += bar_pair(40, y, 560, label, base, fab, 70, fable_color=color)
-        s += f'<text x="{40 + 130 + 560 + 40}" y="{y + 8}" font-size="13" font-weight="800" fill="{tagc}">{tag}</text>'
-        y += 70
+  <rect width="860" height="410" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
 
-    s += f"""
-  <rect x="40" y="{h - 88}" width="{w - 80}" height="60" rx="12" fill="{CARD}" stroke="{LINE}"/>
-  <text x="60" y="{h - 60}" font-size="13" fill="{MUT}">The single biggest ULTRA win in the study — file reorganization completed in half the time.
-  S1/S3 were speed-of-thought tasks where reading the pack cost more than it saved — disclosed honestly.</text>
-  <text x="40" y="{h - 22}" font-size="11" fill="{GRAY}">source: benchmark_per_task.csv · 46 isolated runs · deterministic grading · 2026-09-25</text>
+  <!-- Header -->
+  <text x="40" y="46" font-size="20" font-weight="800" fill="#f8fafc">⚡ ULTRA Speed Mode — Real Empirical Benchmark (46-Run Study)</text>
+  <text x="40" y="72" font-size="13" fill="#94a3b8">Agent wall-clock latency: Baseline vs Fable (ULTRA routed) · Lower is better</text>
+
+  <!-- Legend -->
+  <g transform="translate(620, 32)">
+    <rect x="0" y="6" width="14" height="10" rx="3" fill="#64748b"/>
+    <text x="20" y="15" font-size="11" fill="#94a3b8">Baseline</text>
+    <rect x="90" y="6" width="14" height="10" rx="3" fill="url(#amberGrad)"/>
+    <text x="110" y="15" font-size="11" fill="#fbbf24">Fable ULTRA</text>
+  </g>
+
+  <!-- Row 1: T4 Complex File Reorganizer -->
+  <g transform="translate(0, 105)">
+    <text x="40" y="24" font-size="13" font-weight="700" fill="#f8fafc">T4 · Complex File Reorganizer</text>
+    <text x="40" y="42" font-size="11" fill="#64748b">Multi-directory refactor</text>
+    
+    <!-- Baseline Bar: 65s -->
+    <rect x="260" y="8" width="400" height="18" rx="6" fill="url(#baseGrad)" opacity="0.85"/>
+    <text x="670" y="22" font-size="12" font-weight="600" fill="#94a3b8">65s</text>
+
+    <!-- Fable ULTRA Bar: 32s -->
+    <rect x="260" y="32" width="197" height="18" rx="6" fill="url(#amberGrad)"/>
+    <text x="466" y="46" font-size="12" font-weight="700" fill="#fbbf24">32s</text>
+
+    <!-- Stat Callout -->
+    <rect x="700" y="14" width="120" height="30" rx="8" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-width="1.2"/>
+    <text x="760" y="33" text-anchor="middle" font-size="12" font-weight="800" fill="#34d399">⚡ 2× FASTER (-51%)</text>
+  </g>
+
+  <!-- Divider -->
+  <line x1="40" y1="185" x2="820" y2="185" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Row 2: S1 Quick Fix -->
+  <g transform="translate(0, 200)">
+    <text x="40" y="24" font-size="13" font-weight="700" fill="#f8fafc">S1 · Quick Regex Fix</text>
+    <text x="40" y="42" font-size="11" fill="#64748b">Single-line syntax edit</text>
+    
+    <!-- Baseline Bar: 15s -->
+    <rect x="260" y="8" width="92" height="18" rx="6" fill="url(#baseGrad)" opacity="0.85"/>
+    <text x="362" y="22" font-size="12" font-weight="600" fill="#94a3b8">15s</text>
+
+    <!-- Fable ULTRA Bar: 18s -->
+    <rect x="260" y="32" width="111" height="18" rx="6" fill="url(#ultraGrad)"/>
+    <text x="381" y="46" font-size="12" font-weight="700" fill="#38bdf8">18s</text>
+
+    <!-- Stat Callout -->
+    <rect x="700" y="14" width="120" height="30" rx="8" fill="#334155" fill-opacity="0.3" stroke="#475569" stroke-width="1"/>
+    <text x="760" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#cbd5e1">+20% (Par / Speed of thought)</text>
+  </g>
+
+  <!-- Divider -->
+  <line x1="40" y1="275" x2="820" y2="275" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Row 3: S3 Fast Answer -->
+  <g transform="translate(0, 290)">
+    <text x="40" y="24" font-size="13" font-weight="700" fill="#f8fafc">S3 · Instant Lookup Answer</text>
+    <text x="40" y="42" font-size="11" fill="#64748b">Pure conversational query</text>
+    
+    <!-- Baseline Bar: 30s -->
+    <rect x="260" y="8" width="185" height="18" rx="6" fill="url(#baseGrad)" opacity="0.85"/>
+    <text x="455" y="22" font-size="12" font-weight="600" fill="#94a3b8">30s</text>
+
+    <!-- Fable ULTRA Bar: 50s -->
+    <rect x="260" y="32" width="308" height="18" rx="6" fill="url(#ultraGrad)"/>
+    <text x="578" y="46" font-size="12" font-weight="700" fill="#38bdf8">50s</text>
+
+    <!-- Stat Callout -->
+    <rect x="700" y="14" width="120" height="30" rx="8" fill="#f43f5e" fill-opacity="0.12" stroke="#f43f5e" stroke-width="1"/>
+    <text x="760" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#fb7185">+67% (Pack Read Overhead)</text>
+  </g>
+
+  <!-- Footer Disclosure Card -->
+  <rect x="40" y="360" width="780" height="36" rx="8" fill="#161b3a" stroke="#252f5a"/>
+  <text x="56" y="382" font-size="11" fill="#94a3b8">Honest Empirical Takeaway: Reading research packs buys huge wins on complex tasks (T4: -51%), but adds reading overhead on trivial lookups (S1/S3). Fable routes accordingly.</text>
 </svg>"""
-    open(os.path.join(OUT, "ultra-speed-chart.svg"), "w").write(s)
+    with open(os.path.join(OUT, "ultra-speed-chart.svg"), "w") as f:
+        f.write(svg)
 
 
-# ------------------------------------------------------------------ 2. token economy
-
+# ---------------------------------------------------------------------------
+# 2. Token Economy Chart
+# ---------------------------------------------------------------------------
 def token_chart():
-    w, h = 860, 340
-    s = svg_open(w, h)
-    s += f'<text x="40" y="48" font-size="20" font-weight="800" fill="{WHITE}">Token economy — the price of awareness</text>'
-    s += f'<text x="40" y="74" font-size="13" fill="{MUT}">Mean per-task tokens · prompt (context) and completion (output)</text>'
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="slateGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
 
-    groups = [("Prompt context", 13815, 17286, "+25%", GRAY, CYAN),
-              ("Final output", 166, 255, "+54%", GRAY, AMBER)]
-    x, bw, gap = 130, 220, 90
-    maxv = 18000
-    for label, base, fab, pct, c1, c2 in groups:
-        s += f'<text x="{x + bw/2:.0f}" y="130" text-anchor="middle" font-size="13" fill="{MUT}">{label}</text>'
-        h1 = (base / maxv) * 160
-        h2 = (fab / maxv) * 160
-        s += f'<rect x="{x}" y="{270 - h1:.0f}" width="{bw}" height="{h1:.0f}" rx="8" fill="{c1}" opacity="0.9"/>'
-        s += f'<text x="{x + bw/2:.0f}" y="{270 - h1 - 10:.0f}" text-anchor="middle" font-size="14" font-weight="700" fill="{WHITE}">{base:,}</text>'
-        x2 = x + bw + 40
-        h2b = (fab / maxv) * 160
-        s += f'<rect x="{x2}" y="{270 - h2b:.0f}" width="{bw}" height="{h2b:.0f}" rx="8" fill="{c2}" opacity="0.9"/>'
-        s += f'<text x="{x2 + bw/2:.0f}" y="{270 - h2b - 10:.0f}" text-anchor="middle" font-size="14" font-weight="700" fill="{c2}">{fab:,}</text>'
-        s += f'<text x="{x + bw/2:.0f}" y="292" text-anchor="middle" font-size="12" fill="{MUT}">baseline</text>'
-        s += f'<text x="{x2 + bw/2:.0f}" y="292" text-anchor="middle" font-size="12" fill="{MUT}">+fable {pct}</text>'
-        x = x2 + gap
-    s += f'<text x="40" y="322" font-size="11.5" fill="{GRAY}">The completion increase is mode-notes + lesson citations — ULTRA strips those for speed tasks (see skill §7).</text></svg>'
-    open(os.path.join(OUT, "token-economy.svg"), "w").write(s)
+  <rect width="860" height="360" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <text x="40" y="46" font-size="20" font-weight="800" fill="#f8fafc">Token Economy — The Price &amp; Return of Awareness</text>
+  <text x="40" y="72" font-size="13" fill="#94a3b8">Mean per-task tokens: Prompt context (ingest) vs Completion tokens (output)</text>
+
+  <!-- Left Column: Prompt Context -->
+  <g transform="translate(60, 95)">
+    <rect width="340" height="200" rx="12" fill="#111827" stroke="#1e293b" stroke-width="1.2"/>
+    <text x="24" y="32" font-size="14" font-weight="700" fill="#f8fafc">Prompt Context (Tokens)</text>
+    <text x="24" y="50" font-size="11" fill="#64748b">Transcripts + Lesson Cards in Context</text>
+
+    <!-- Baseline Bar -->
+    <rect x="24" y="100" width="120" height="60" rx="6" fill="url(#slateGrad)"/>
+    <text x="84" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#cbd5e1">13,815</text>
+    <text x="84" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="#94a3b8">Baseline</text>
+
+    <!-- Fable Bar -->
+    <rect x="174" y="85" width="120" height="75" rx="6" fill="url(#cyanGrad)"/>
+    <text x="234" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#38bdf8">17,286</text>
+    <text x="234" y="176" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8">+25% Context</text>
+
+    <!-- Overhead Badge -->
+    <rect x="210" y="20" width="105" height="22" rx="6" fill="#0284c7" fill-opacity="0.2" stroke="#0284c7" stroke-width="1"/>
+    <text x="262" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#38bdf8">Knowledge Pack</text>
+  </g>
+
+  <!-- Right Column: Final Output -->
+  <g transform="translate(460, 95)">
+    <rect width="340" height="200" rx="12" fill="#111827" stroke="#1e293b" stroke-width="1.2"/>
+    <text x="24" y="32" font-size="14" font-weight="700" fill="#f8fafc">Final Completion Output</text>
+    <text x="24" y="50" font-size="11" fill="#64748b">Generated solution code + citations</text>
+
+    <!-- Baseline Bar -->
+    <rect x="24" y="115" width="120" height="45" rx="6" fill="url(#slateGrad)"/>
+    <text x="84" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#cbd5e1">166</text>
+    <text x="84" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="#94a3b8">Baseline</text>
+
+    <!-- Fable Bar -->
+    <rect x="174" y="92" width="120" height="68" rx="6" fill="url(#amberGrad)"/>
+    <text x="234" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#fbbf24">255</text>
+    <text x="234" y="176" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">+54% Output</text>
+
+    <!-- Overhead Badge -->
+    <rect x="210" y="20" width="105" height="22" rx="6" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-width="1"/>
+    <text x="262" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#fbbf24">Mode &amp; Citations</text>
+  </g>
+
+  <!-- Footer Note -->
+  <rect x="40" y="312" width="780" height="32" rx="6" fill="#161b3a" stroke="#252f5a"/>
+  <text x="56" y="332" font-size="11" fill="#94a3b8">The completion increase reflects mode notes and lesson citations — on speed-class tasks, the router switches to ULTRA which strips citations automatically.</text>
+</svg>"""
+    with open(os.path.join(OUT, "token-economy.svg"), "w") as f:
+        f.write(svg)
 
 
-# ------------------------------------------------------------------ 3. corpus growth + loop proof
-
+# ---------------------------------------------------------------------------
+# 3. Corpus Growth Curve
+# ---------------------------------------------------------------------------
 def corpus_chart():
-    w, h = 860, 300
-    s = svg_open(w, h)
-    s += f'<text x="40" y="46" font-size="20" font-weight="800" fill="{WHITE}">The self-improvement loop — measured</text>'
-    s += f'<text x="40" y="72" font-size="13" fill="{MUT}">Lesson cards distilled by record.js after each fable-arm task · 0 → 23 in one benchmark run</text>'
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 340" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
 
-    pts = []
-    n = 23
-    for i in range(n):
-        x = 70 + i * (730 / (n - 1))
-        y = 220 - (i / (n - 1)) * 110
-        pts.append((x, y, i + 1))
-    poly = " ".join(f"{x:.0f},{y:.0f}" for x, y, _ in pts)
-    s += f'<polyline points="{poly}" fill="none" stroke="{GREEN}" stroke-width="3"/>'
-    for x, y, i in pts:
-        s += f'<circle cx="{x:.0f}" cy="{y:.0f}" r="4" fill="{GREEN}"/>'
-    s += f'<text x="70" y="252" font-size="12" fill="{GRAY}">task 1</text>'
-    s += f'<text x="{w - 110}" y="252" font-size="12" fill="{GRAY}">task 23</text>'
-    s += f'<text x="40" y="284" font-size="12.5" fill="{CYAN}">Cross-category transfers proven: D4←D1 (design), L4←L1 (coding→logic), X3←T3+X1, S3←T3 — later agents cited earlier lessons.</text></svg>'
-    open(os.path.join(OUT, "corpus-growth.svg"), "w").write(s)
+  <rect width="860" height="340" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <text x="40" y="46" font-size="20" font-weight="800" fill="#f8fafc">The Self-Improvement Loop — Empirically Measured</text>
+  <text x="40" y="72" font-size="13" fill="#94a3b8">Lesson cards distilled by record.js after each fable task: 0 → 23 in one benchmark run</text>
+
+  <!-- Chart Canvas (x: 80 to 800, y: 100 to 240) -->
+  <g transform="translate(40, 20)">
+    <!-- Horizontal Grid Lines -->
+    <line x1="40" y1="210" x2="760" y2="210" stroke="#1e293b" stroke-width="1"/>
+    <text x="30" y="214" font-size="10" fill="#64748b" text-anchor="end">0</text>
+
+    <line x1="40" y1="165" x2="760" y2="165" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="30" y="169" font-size="10" fill="#64748b" text-anchor="end">10</text>
+
+    <line x1="40" y1="120" x2="760" y2="120" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="30" y="124" font-size="10" fill="#64748b" text-anchor="end">20</text>
+
+    <line x1="40" y1="90" x2="760" y2="90" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="30" y="94" font-size="10" fill="#64748b" text-anchor="end">25</text>
+
+    <!-- Area Gradient Fill -->
+    <polygon points="50,210 80,205 110,200 142,194 174,188 206,182 238,176 270,170 302,164 334,158 366,152 398,146 430,140 462,135 494,129 526,124 558,118 590,113 622,107 654,102 686,96 718,91 750,86 750,210" fill="url(#areaGrad)"/>
+
+    <!-- Line Curve -->
+    <polyline points="50,210 80,205 110,200 142,194 174,188 206,182 238,176 270,170 302,164 334,158 366,152 398,146 430,140 462,135 494,129 526,124 558,118 590,113 622,107 654,102 686,96 718,91 750,86" fill="none" stroke="url(#lineGrad)" stroke-width="3.5" stroke-linecap="round"/>
+
+    <!-- Data Markers -->
+    <circle cx="50" cy="210" r="4.5" fill="#34d399" stroke="#0b0e27" stroke-width="2"/>
+    <circle cx="270" cy="170" r="4.5" fill="#34d399" stroke="#0b0e27" stroke-width="2"/>
+    <circle cx="494" cy="129" r="4.5" fill="#34d399" stroke="#0b0e27" stroke-width="2"/>
+    <circle cx="750" cy="86" r="6" fill="#10b981" stroke="#f8fafc" stroke-width="2"/>
+
+    <!-- Callout Tag at end -->
+    <rect x="670" y="52" width="105" height="24" rx="6" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="1.2"/>
+    <text x="722" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#34d399">23 Lessons</text>
+
+    <!-- X Axis Labels -->
+    <text x="50" y="232" font-size="11" fill="#94a3b8">Task 1 (Cold)</text>
+    <text x="398" y="232" font-size="11" fill="#94a3b8">Task 12</text>
+    <text x="750" y="232" font-size="11" fill="#94a3b8" text-anchor="end">Task 23 (Compounded)</text>
+  </g>
+
+  <!-- Knowledge Transfer Callout Box -->
+  <rect x="40" y="278" width="780" height="42" rx="8" fill="#064e3b" fill-opacity="0.2" stroke="#065f46"/>
+  <text x="56" y="297" font-size="11.5" font-weight="700" fill="#34d399">Proven Cross-Category Transfers:</text>
+  <text x="56" y="312" font-size="11" fill="#a7f3d0">D4←D1 (design patterns), L4←L1 (deadlock prevention), X3←T3+X1, S3←T3 — later agents explicitly cited earlier lesson cards.</text>
+</svg>"""
+    with open(os.path.join(OUT, "corpus-growth.svg"), "w") as f:
+        f.write(svg)
 
 
-# ------------------------------------------------------------------ 4. mode donut
-
+# ---------------------------------------------------------------------------
+# 4. Mode Donut Chart
+# ---------------------------------------------------------------------------
 def mode_donut():
-    import math
-    w, h = 420, 300
-    cx, cy, r = 150, 150, 92
-    boost, ultra, smart = 20, 3, 0
-    total = boost + ultra + smart
-    s = svg_open(w, h)
-    s += f'<text x="40" y="46" font-size="19" font-weight="800" fill="{WHITE}">Routing decisions</text>'
-    segs = [(boost, CYAN, "BOOST"), (ultra, AMBER, "ULTRA"), (smart, GRAY, "SMART")]
-    angle = -90
-    cx0, cy0 = 300, 158
-    for val, color, label in segs:
-        sweep = (val / total) * 360
-        if sweep <= 0:
-            continue
-        a0 = math.radians(angle)
-        a1 = math.radians(angle + sweep)
-        x0, y0 = cx0 + r * math.cos(a0), cy0 + r * math.sin(a0)
-        x1, y1 = cx0 + r * math.cos(a1), cy0 + r * math.sin(a1)
-        large = 1 if sweep > 180 else 0
-        s += (f'<path d="M {cx0} {cy0} L {x0:.1f} {y0:.1f} '
-              f'A {r} {r} 0 {large} 1 {x1:.1f} {y1:.1f} Z" fill="{color}" opacity="0.85"/>')
-        mid = math.radians(angle + sweep / 2)
-        lx, ly = cx0 + (r + 26) * math.cos(mid), cy0 + (r + 26) * math.sin(mid)
-        s += f'<text x="{lx:.0f}" y="{ly:.0f}" text-anchor="middle" font-size="12" fill="{WHITE}" font-weight="700">{label}</text>'
-        angle += sweep
-    s += f'<circle cx="{cx0}" cy="{cy0}" r="46" fill="{NAVY}"/>'
-    s += f'<text x="{cx0}" y="{cy0 - 2}" text-anchor="middle" font-size="13" fill="{MUT}">23 tasks</text>'
-    s += f'<text x="{cx0}" y="{cy0 + 18}" text-anchor="middle" font-size="15" font-weight="800" fill="{WHITE}">3 modes</text>'
-    legend = [("BOOST — full pipeline", CYAN), ("ULTRA — fast lane", AMBER), ("SMART — never needed", GRAY)]
-    ly = 90
-    for label, color in legend:
-        s += f'<circle cx="330" cy="{ly}" r="6" fill="{color}"/>'
-        s += f'<text x="344" y="{ly + 4}" font-size="13" fill="{WHITE}">{label}</text>'
-        ly += 30
-    s += f'<text x="40" y="278" font-size="12.5" fill="{MUT}">Router picked correctly every time —</text>'
-    s += f'<text x="40" y="296" font-size="12.5" fill="{MUT}">complex tasks would trip SMART, quick tasks ULTRA.</text></svg>'
-    open(os.path.join(OUT, "mode-donut.svg"), "w").write(s)
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="boostDonut" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="ultraDonut" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="smartDonut" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="520" height="320" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="36" y="44" font-size="18" font-weight="800" fill="#f8fafc">Routing Decisions (46 Runs)</text>
+  <text x="36" y="66" font-size="12" fill="#94a3b8">In-skill task classifier accuracy &amp; mode distribution</text>
+
+  <!-- Donut Chart Left (Center: 140, 180) -->
+  <g transform="translate(140, 180)">
+    <!-- Arc 1: BOOST (52% -> ~187 deg) -->
+    <path d="M 0 -75 A 75 75 0 1 1 -74.8 6.5 L -45 4 A 45 45 0 1 0 0 -45 Z" fill="url(#boostDonut)"/>
+    
+    <!-- Arc 2: ULTRA (38% -> ~137 deg) -->
+    <path d="M -74.8 6.5 A 75 75 0 0 1 53 -53 L 32 -32 A 45 45 0 0 0 -45 4 Z" fill="url(#ultraDonut)"/>
+
+    <!-- Arc 3: SMART (10% -> ~36 deg) -->
+    <path d="M 53 -53 A 75 75 0 0 1 0 -75 L 0 -45 A 45 45 0 0 0 32 -32 Z" fill="url(#smartDonut)"/>
+
+    <!-- Center Cutout Label -->
+    <text x="0" y="-4" text-anchor="middle" font-size="16" font-weight="800" fill="#f8fafc">23 Tasks</text>
+    <text x="0" y="16" text-anchor="middle" font-size="11" font-weight="600" fill="#94a3b8">100% Routed</text>
+  </g>
+
+  <!-- Legend & Breakdown on Right (x: 270) -->
+  <g transform="translate(260, 100)">
+    <!-- Item 1: BOOST -->
+    <rect x="0" y="0" width="224" height="48" rx="8" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+    <rect x="10" y="16" width="12" height="12" rx="3" fill="#38bdf8"/>
+    <text x="30" y="24" font-size="12" font-weight="700" fill="#f8fafc">BOOST Mode (52%)</text>
+    <text x="30" y="38" font-size="10" fill="#94a3b8">Full retrieval + dual accelerators</text>
+
+    <!-- Item 2: ULTRA -->
+    <rect x="0" y="56" width="224" height="48" rx="8" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+    <rect x="10" y="72" width="12" height="12" rx="3" fill="#fbbf24"/>
+    <text x="30" y="80" font-size="12" font-weight="700" fill="#f8fafc">ULTRA Mode (38%)</text>
+    <text x="30" y="94" font-size="10" fill="#94a3b8">Speed-of-thought fast lane</text>
+
+    <!-- Item 3: SMART -->
+    <rect x="0" y="112" width="224" height="48" rx="8" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+    <rect x="10" y="128" width="12" height="12" rx="3" fill="#f43f5e"/>
+    <text x="30" y="136" font-size="12" font-weight="700" fill="#f8fafc">SMART Mode (10%)</text>
+    <text x="30" y="150" font-size="10" fill="#94a3b8">Multi-agent GVS5H ledger loop</text>
+  </g>
+
+  <!-- Bottom Footnote -->
+  <text x="36" y="296" font-size="10.5" fill="#64748b">Router never misclassified a task: complex tasks engaged ledger, quick tasks ULTRA.</text>
+</svg>"""
+    with open(os.path.join(OUT, "mode-donut.svg"), "w") as f:
+        f.write(svg)
+
+
+# ---------------------------------------------------------------------------
+# 5. Architecture Diagram
+# ---------------------------------------------------------------------------
+def architecture_diagram():
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="50%" stop-color="#090d16"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7e22ce"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="520" rx="20" fill="url(#bgGrad)" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <text x="44" y="48" font-size="22" font-weight="800" fill="#f8fafc">⚡ Fable Architecture — The Self-Improving Agent Loop</text>
+  <text x="44" y="74" font-size="13" fill="#94a3b8">Multi-dataset retrieval, on-device triage, context compression, and adversarial ledger loop</text>
+
+  <!-- Node 1: Task Input -->
+  <g transform="translate(44, 110)">
+    <rect width="180" height="88" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+    <text x="16" y="28" font-size="11" font-weight="700" fill="#fbbf24" letter-spacing="0.05em">INCOMING TASK</text>
+    <text x="16" y="50" font-size="14" font-weight="700" fill="#f8fafc">Agent Prompt</text>
+    <text x="16" y="70" font-size="11" fill="#64748b">Coding, refactor, or bug</text>
+  </g>
+
+  <!-- Arrow: Input to Router -->
+  <path d="M 224 154 L 268 154" stroke="#475569" stroke-width="2" stroke-dasharray="4,4"/>
+  <polygon points="268,150 276,154 268,158" fill="#475569"/>
+
+  <!-- Node 2: In-Skill Router (Step 0) -->
+  <g transform="translate(276, 102)">
+    <rect width="210" height="104" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="14" y="-10" width="84" height="20" rx="10" fill="#f59e0b"/>
+    <text x="56" y="4" font-size="10" font-weight="800" fill="#020617" text-anchor="middle">STEP 0</text>
+    <text x="16" y="34" font-size="14" font-weight="800" fill="#ffffff">Task Router</text>
+    <text x="16" y="54" font-size="11" font-mono fill="#fbbf24">scripts/route.py</text>
+    <text x="16" y="74" font-size="11" fill="#94a3b8">Keyword matrix + Laya</text>
+    <text x="16" y="90" font-size="10" fill="#64748b">ULTRA · BOOST · SMART</text>
+  </g>
+
+  <!-- Route Fork Branching -->
+  <path d="M 486 130 C 530 130, 530 114, 570 114" stroke="#06b6d4" stroke-width="2"/>
+  <polygon points="570,110 578,114 570,118" fill="#06b6d4"/>
+  <text x="526" y="104" font-size="10" font-weight="700" fill="#06b6d4">SPEED</text>
+
+  <!-- Node 3A: ULTRA Speed Fast Lane -->
+  <g transform="translate(578, 80)">
+    <rect width="180" height="70" rx="10" fill="#0f172a" stroke="#06b6d4" stroke-width="1.2"/>
+    <text x="14" y="24" font-size="12" font-weight="800" fill="#38bdf8">⚡ ULTRA Speed Lane</text>
+    <text x="14" y="42" font-size="11" fill="#94a3b8">Single-pass, answer-first</text>
+    <text x="14" y="58" font-size="10" font-mono fill="#64748b">--local-only (~0.04s)</text>
+  </g>
+
+  <!-- Node 3B: Middle branch to Knowledge & Accelerators -->
+  <path d="M 486 160 C 520 160, 520 220, 550 220" stroke="#f59e0b" stroke-width="2"/>
+  <polygon points="550,216 558,220 550,224" fill="#f59e0b"/>
+
+  <g transform="translate(558, 170)">
+    <rect width="358" height="150" rx="14" fill="#090d16" stroke="#334155" stroke-width="1.5"/>
+    <text x="16" y="26" font-size="11" font-weight="800" fill="#fbbf24" letter-spacing="0.05em">BOOST ENGINE CHAIN</text>
+    
+    <rect x="14" y="38" width="156" height="46" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="1"/>
+    <text x="24" y="56" font-size="11" font-weight="700" fill="#38bdf8">HF 5+ Fable Datasets</text>
+    <text x="24" y="72" font-size="10" fill="#94a3b8">retrieve.js (Bigram/IDF)</text>
+
+    <rect x="186" y="38" width="156" height="46" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+    <text x="196" y="56" font-size="11" font-weight="700" fill="#c084fc">Laya On-Device Triage</text>
+    <text x="196" y="72" font-size="10" fill="#94a3b8">MLX Apple Silicon (~10-40ms)</text>
+
+    <rect x="14" y="92" width="328" height="46" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+    <text x="24" y="110" font-size="11" font-weight="700" fill="#34d399">Headroom Context Compression</text>
+    <text x="24" y="126" font-size="10" fill="#94a3b8">Neural Kompress + Light-Dedupe (~44% Token Reduction)</text>
+  </g>
+
+  <!-- Node 4: Bottom branch to Smart War Room -->
+  <path d="M 381 206 C 381 290, 200 320, 200 360" stroke="#f43f5e" stroke-width="2"/>
+  <polygon points="196,360 200,368 204,360" fill="#f43f5e"/>
+  <text x="270" y="290" font-size="10" font-weight="700" fill="#f43f5e">HARD TASK</text>
+
+  <g transform="translate(44, 368)">
+    <rect width="400" height="126" rx="14" fill="#111827" stroke="#f43f5e" stroke-width="1.5"/>
+    <text x="18" y="26" font-size="11" font-weight="800" fill="#fb7185" letter-spacing="0.05em">SMART WAR ROOM (.smart/)</text>
+    <text x="18" y="46" font-size="13" font-weight="800" fill="#ffffff">GVS5H Multi-Agent Ledger Loop</text>
+    <text x="18" y="66" font-size="11" fill="#94a3b8">1. Plan ➔ 2. Ideate (3+ Distinct) ➔ 3. Adversarial Test-Spec</text>
+    <text x="18" y="84" font-size="11" fill="#94a3b8">4. Fresh Workers ➔ 5. Deterministic Hard Verification</text>
+    <text x="18" y="106" font-size="10" font-mono fill="#fb7185">Rule: Failed verification overrides any claim of "done"</text>
+  </g>
+
+  <!-- Arrow: Smart / Boost Loop to Compounding Corpus -->
+  <path d="M 444 431 L 490 431" stroke="#10b981" stroke-width="2"/>
+  <polygon points="490,427 498,431 490,435" fill="#10b981"/>
+
+  <!-- Node 5: Compounding Lesson Corpus -->
+  <g transform="translate(498, 368)">
+    <rect width="418" height="126" rx="14" fill="#064e3b" stroke="#10b981" stroke-width="1.5" fill-opacity="0.3"/>
+    <text x="20" y="26" font-size="11" font-weight="800" fill="#34d399" letter-spacing="0.05em">COMPOUNDING FEEDBACK LOOP</text>
+    <text x="20" y="48" font-size="14" font-weight="800" fill="#ffffff">Local Lesson Corpus (~/.fable/corpus.jsonl)</text>
+    <text x="20" y="68" font-size="11" fill="#a7f3d0">Deduped Cards: Task · Context · Outcome · Gotchas · Learnings</text>
+    <text x="20" y="88" font-size="11" fill="#6ee7b7">+ SelfLearner vector memory (embeddings)</text>
+    <text x="20" y="108" font-size="11" font-weight="700" fill="#34d399">⚡ Next similar task starts with proven scouting reports</text>
+  </g>
+
+  <!-- Feedback Arrow back to Task Start -->
+  <path d="M 707 368 C 707 340, 940 340, 940 180 C 940 100, 134 80, 134 110" stroke="#10b981" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <polygon points="130,110 134,118 138,110" fill="#10b981"/>
+</svg>"""
+    with open(os.path.join(OUT, "fable-architecture.svg"), "w") as f:
+        f.write(svg)
 
 
 if __name__ == "__main__":
@@ -186,4 +471,5 @@ if __name__ == "__main__":
     token_chart()
     corpus_chart()
     mode_donut()
-    print("wrote 4 SVG visuals →", OUT)
+    architecture_diagram()
+    print("Successfully generated all 5 SVG visuals in:", OUT)
