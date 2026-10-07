@@ -2,6 +2,20 @@
 
 All notable changes to the Fable plugin and experience studio are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v2.1.0] — 2026-10-07 — Ground Truth Verification, Anti-Slop, Autonomous DAST & Cloudflare Security Audit
+
+### Added
+- **4 Advanced Agent Skills & Execution Packages**:
+  - **`reverify` (`2akouwu/reverify`)**: Ground truth verification harness (`skills/reverify/SKILL.md`, `packages/reverify/`). Prohibits AI from asserting facts independently; enforces claim proposal, deterministic tool probing, and `KNOWN_FALSE` refutation memory to prevent hallucinations. Includes double-blind bug fix verification protocol ("Verify Before Fix, Verify After Fix").
+  - **`stop-slop` (`hardikpandya/stop-slop`)**: Anti-AI slop human craft engine (`skills/stop-slop/SKILL.md`, `packages/stop-slop/`). Evaluates prose and code copy against 8 core anti-slop rules and a 5-dimension, 50-point crafting rubric (Voice, Specificity, Structure, Density, Visual Craft) to eliminate AI writing tells and generic filler.
+  - **`strix` (`usestrix/strix`)**: Autonomous agentic penetration testing and DAST engine (`skills/strix-pentest/SKILL.md`, `packages/strix/`). Scans endpoints for OWASP Top 10 vulnerabilities (SQLi, IDOR, SSRF, XSS) and validates them with executable Proof-of-Concept (PoC) exploits in an isolated sandbox with zero false positives.
+  - **`cloudflare-security-audit` (`cloudflare/security-audit-skill`)**: Multi-phase security audit and edge header hardening (`skills/cloudflare-security-audit/SKILL.md`, `packages/security-audit/`). Implements Cloudflare's 6-phase audit workflow (Reconnaissance, Coverage-Led Hunting, Candidate Validation, Structured Output, Independent Verification, Target-Neutral Reporting) and checks edge header invariants (CSP, HSTS, X-Content-Type, CORS, TLS 1.3).
+- **Universal Task Router & CLI Integration**:
+  - Upgraded `scripts/route.py` with intelligent routing rules and execution steps for `reverify`, `stop_slop`, `strix_pentest`, and `cf_security_audit`.
+  - Expanded `packages/cli/src/index.ts` to support 20 commands: added `qa reverify`, `qa slop`, `qa strix`, and `qa sec-audit`.
+- **Backend API Routes**:
+  - Added Express endpoints: `/api/reverify/check`, `/api/stop-slop/score`, `/api/strix/scan`, and `/api/security-audit/run`.
+
 ## [v2.0.0] — 2026-10-07 — qaforge: AI-Native QA Operating System
 
 ### Added

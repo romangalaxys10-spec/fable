@@ -33,7 +33,7 @@
                    │  FABLE EXPERIENCE LAYER          │ │  qaforge QA OPERATING SYSTEM  │
                    │  • Local Corpus (~/.fable/)      │ │  LAYER A: 28 Agent Skills     │
                    │  • 5+ HF Datasets Retrieval      │ │  LAYER B: 10 Core Packages    │
-                   │  • Laya MLX On-Device Triage     │ │  • 16-Command CLI (qa ...)    │
+                   │  • Laya MLX On-Device Triage     │ │  • 20-Command CLI (qa ...)    │
                    │  • Headroom Neural Kompress      │ │  • 8 Specialized Sub-Agents   │
                    │  • GVS5H Smart Scaffold War Room │ │  • 5 Runner Adapters          │
                    │  • ViMax Storyboard & Remotion   │ │  • 11 MCP Tools               │
@@ -71,7 +71,7 @@
 
 #### Layer B — Execution Platform (`packages/*`)
 
-1. **`packages/cli/`**: Universal command-line interface with 16 subcommands:
+1. **`packages/cli/`**: Universal command-line interface with 20 subcommands:
    ```bash
    # Run system health check
    npx tsx packages/cli/src/index.ts doctor
@@ -79,24 +79,22 @@
    # Evaluate 8-factor risk score for a proposed task
    npx tsx packages/cli/src/index.ts risk --task "Payment gateway checkout integration" --json
 
-   # Perform AST Change Impact Analysis
-   npx tsx packages/cli/src/index.ts impact
+   # Verify claim against ground truth
+   npx tsx packages/cli/src/index.ts reverify --claim "package.json exists" --file "package.json"
 
-   # Generate enterprise test suite across 8 heuristics
-   npx tsx packages/cli/src/index.ts generate --task "User registration with email OTP"
+   # Score prose or code against anti-slop rules
+   npx tsx packages/cli/src/index.ts slop --text "In today's fast-paced world..."
 
-   # Cluster test failures into root-cause buckets
-   npx tsx packages/cli/src/index.ts triage
+   # Run Strix autonomous DAST penetration test
+   npx tsx packages/cli/src/index.ts strix --target "http://localhost:3000"
 
-   # Evaluate confidence-tiered self-healing patch
-   npx tsx packages/cli/src/index.ts heal
-
-   # Audit release readiness against 15 Golden Rules
-   npx tsx packages/cli/src/index.ts release
+   # Run Cloudflare 6-phase security audit
+   npx tsx packages/cli/src/index.ts sec-audit --target "http://localhost:3000"
 
    # Full command suite (all support --json, --dry-run, --quiet):
    # init | discover | plan | risk | generate | review | test | impact
    # triage | heal | flake | coverage | release | report | doctor | explain
+   # reverify | slop | strix | sec-audit
    ```
 
 2. **`packages/core/`**:
@@ -140,6 +138,22 @@
 
 10. **`packages/mcp-server/` (11 MCP Tools)**:
     - Standard Model Context Protocol server exposing: `discover_project`, `analyze_risk`, `list_relevant_tests`, `generate_tests`, `run_tests`, `get_failure_evidence`, `triage_failure`, `propose_test_heal`, `analyze_flake`, `generate_quality_report`, `evaluate_release`.
+
+11. **`packages/reverify/` (`2akouwu/reverify`)**:
+    - Ground Truth Verification Harness: Prohibits AI from asserting facts independently. Enforces claim proposal, deterministic tool probing, and `KNOWN_FALSE` refutation memory. Includes double-blind bug fix verification ("Verify Before Fix, Verify After Fix").
+    - CLI: `npx tsx packages/cli/src/index.ts reverify --claim "..." --file "..."`
+
+12. **`packages/stop-slop/` (`hardikpandya/stop-slop`)**:
+    - Anti-AI Slop Human Craft Engine: Evaluates prose and code copy against 8 core anti-slop rules and a 5-dimension, 50-point crafting rubric (Voice, Specificity, Structure, Density, Visual Craft) to eliminate AI writing tells and generic filler.
+    - CLI: `npx tsx packages/cli/src/index.ts slop --text "..."`
+
+13. **`packages/strix/` (`usestrix/strix`)**:
+    - Autonomous Agentic Pentesting & DAST Engine: Scans endpoints for OWASP Top 10 vulnerabilities (SQLi, IDOR, SSRF, XSS) and validates them with executable Proof-of-Concept (PoC) exploits in an isolated sandbox with zero false positives.
+    - CLI: `npx tsx packages/cli/src/index.ts strix --target "http://localhost:3000"`
+
+14. **`packages/security-audit/` (`cloudflare/security-audit-skill`)**:
+    - Multi-Phase Security Audit & Edge Hardening: Implements Cloudflare's 6-phase audit workflow (Reconnaissance, Coverage-Led Hunting, Candidate Validation, Structured Output, Independent Verification, Target-Neutral Reporting) and checks edge header invariants (CSP, HSTS, X-Content-Type, CORS, TLS 1.3).
+    - CLI: `npx tsx packages/cli/src/index.ts sec-audit --target "http://localhost:3000"`
 
 ---
 
