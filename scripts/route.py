@@ -59,6 +59,16 @@ ROUTING = {
                     "failed twice", "still failing", "hard"],
         "exclude": [],
     },
+    "qa_architect": {
+        "why": "qaforge AI-Native QA Operating System (Change Impact, 8-Factor Risk, 12-Category Triage, Self-Healing, 15 Golden Rules)",
+        "include": ["test", "tests", "testing", "qa", "qa-architect", "e2e", "playwright",
+                    "cypress", "jest", "vitest", "unit test", "integration test",
+                    "api test", "contract test", "coverage", "flaky", "deflak",
+                    "regression", "smoke", "k6", "performance test", "load test",
+                    "axe", "accessibility test", "owasp", "security test", "quality gate",
+                    "test plan", "test strategy", "spec", "assert", "bdd", "tdd"],
+        "exclude": [],
+    },
     "brainstorming": {
         "why": "creative/ambiguous work — intent gate before building",
         "include": ["new feature", "design", "idea", "concept", "prototype",
@@ -357,9 +367,11 @@ def main():
             "1) corpus: node scripts/search.js \"<task>\"" + ("  [RUN]" if "corpus_search" in routed else "  [skip]"),
             "2) boost: python3 scripts/boost/boost.py --task \"<task>\""
             + ("  [RUN]" if "external_retrieve" in routed else "  [skip]"),
-            "3) hard? -> smart_scaffold.py | creative? -> brainstorming skill | video? -> skills/video",
-            "4) blocked? -> scripts/escalate.py --blocker \"…\" --options \"a|b\"",
-            "5) done -> node scripts/record.js … (always)",
+            "3) QA? -> npx tsx packages/cli/src/index.ts plan --task \"<task>\" (or qa risk/impact/triage)"
+            + ("  [RUN]" if "qa_architect" in routed else "  [skip]"),
+            "4) hard? -> smart_scaffold.py | creative? -> brainstorming skill | video? -> skills/video",
+            "5) blocked? -> scripts/escalate.py --blocker \"…\" --options \"a|b\"",
+            "6) done -> node scripts/record.js … (always)",
         ],
     }
     print(json.dumps(plan, indent=2))

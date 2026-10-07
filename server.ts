@@ -5,6 +5,13 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { runQADoctor } from './packages/cli/src/doctor';
+import { calculateRisk } from './packages/core/src/risk';
+import { analyzeImpact } from './packages/core/src/impact';
+import { clusterFailures } from './packages/agents/src/triage-agent';
+import { evaluateHealing } from './packages/healing/src/healer';
+import { generateEnterpriseTestSuite } from './packages/agents/src/generator-agent';
+import { buildStandardQualityGraph } from './packages/graph/src/quality-graph';
 
 const execFileAsync = promisify(execFile);
 const __filename = fileURLToPath(import.meta.url);
@@ -129,6 +136,7 @@ app.get('/api/status', async (req, res) => {
       headroom: { status: 'ready', engine: 'light-dedupe + kompress fallback', compression: '~42% token reduction' },
       smartScaffold: { status: 'ready', loop: 'GVS5H Multi-Agent Ledger', dir: '.smart/' },
       vimax: { status: 'ready', type: 'ViMax + Remotion + AI4Animation Studio' },
+      qaArchitect: { status: 'ready', catalog: 'QASkills.sh (Pramod Dutta)', engine: '4-Quadrant Decomposition & Auto-Waiting', skills: 7 },
       securityGate: { status: 'ready', policy: 'P0-P3 Audit Active' }
     },
     datasets: [
@@ -163,9 +171,11 @@ app.post('/api/route', async (req, res) => {
     const isUltra = lower.includes('quick') || lower.includes('simple') || lower.includes('fast') || lower.includes('typo') || lower.includes('format');
     const isSmart = lower.includes('architect') || lower.includes('race condition') || lower.includes('concurrency') || lower.includes('refactor') || lower.includes('hard') || lower.includes('failed');
     const isVideo = lower.includes('video') || lower.includes('animation') || lower.includes('storyboard') || lower.includes('film');
+    const isQA = lower.includes('test') || lower.includes('qa') || lower.includes('playwright') || lower.includes('cypress') || lower.includes('jest') || lower.includes('vitest') || lower.includes('e2e') || lower.includes('flaky');
 
     let mode = 'BOOST';
-    if (isUltra) mode = 'ULTRA';
+    if (isQA) mode = 'QA-ARCHITECT';
+    else if (isUltra) mode = 'ULTRA';
     else if (isSmart) mode = 'SMART';
     else if (isVideo) mode = 'VIDEO';
 
@@ -176,6 +186,7 @@ app.post('/api/route', async (req, res) => {
       recommendations: [
         { engine: 'corpus_search', status: 'run', reason: 'Search local lesson cards first (~0.04s)' },
         { engine: 'external_retrieve', status: mode === 'ULTRA' ? 'skip' : 'run', reason: 'Hugging Face fable datasets' },
+        { engine: 'qa_architect', status: isQA ? 'run' : 'skip', reason: 'QA-Architect 4-quadrant decomposition & test plan (QASkills.sh)' },
         { engine: 'laya_boost', status: process.platform === 'darwin' ? 'run' : 'skip', reason: 'Fast binary triage' },
         { engine: 'headroom_compress', status: 'run', reason: 'Context compression to reduce token cost' },
         { engine: 'smart_scaffold', status: mode === 'SMART' ? 'run' : 'skip', reason: 'Boss fight / hard task ledger loop' },
@@ -183,6 +194,7 @@ app.post('/api/route', async (req, res) => {
       ],
       commands: [
         `node scripts/search.js "${task}"`,
+        ...(isQA ? [`python3 vendor/qa-skills/qa_skills.py plan --task "${task}"`] : []),
         ...(mode === 'SMART' ? [`python3 scripts/boost/smart_scaffold.py --task "${task}"`] : []),
         `python3 scripts/boost/boost.py --task "${task}"`
       ]
@@ -447,6 +459,95 @@ app.get('/api/benchmarks', (req, res) => {
       smart: 10
     }
   });
+});
+
+// 9. QA Skills & QA-Architect Strategy Planner (QASkills.sh)
+app.get('/api/qa/skills', async (req, res) => {
+  try {
+    const qaScript = path.join(__dirname, 'vendor', 'qa-skills', 'qa_skills.py');
+    const { stdout } = await execFileAsync('python3', [qaScript, 'list', '--json'], { timeout: 8000 });
+    res.json(JSON.parse(stdout));
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/qa/plan', async (req, res) => {
+  const { task } = req.body;
+  if (!task) return res.status(400).json({ error: 'Task is required' });
+
+  try {
+    const qaScript = path.join(__dirname, 'vendor', 'qa-skills', 'qa_skills.py');
+    const { stdout } = await execFileAsync('python3', [qaScript, 'plan', '--task', task, '--json'], { timeout: 8000 });
+    res.json(JSON.parse(stdout));
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 10. qaforge AI-Native QA Operating System Endpoints
+app.get('/api/qa/doctor', (req, res) => {
+  res.json(runQADoctor());
+});
+
+app.post('/api/qa/risk', (req, res) => {
+  const { task, factors } = req.body;
+  res.json(calculateRisk(factors || {}, task || ''));
+});
+
+app.post('/api/qa/impact', (req, res) => {
+  const { files, commitRange } = req.body;
+  res.json(analyzeImpact(files || ['src/services/payment.ts', 'src/components/CheckoutModal.tsx', 'src/server.ts'], commitRange || 'HEAD~1..HEAD'));
+});
+
+app.post('/api/qa/triage', (req, res) => {
+  const { failures } = req.body;
+  res.json(clusterFailures(failures || [
+    {
+      testId: 'tests/e2e/checkout.spec.ts',
+      errorMessage: 'Timeout 30000ms exceeded waiting for locator button.btn-pay',
+      firstAttemptFailed: true,
+      retryPassed: false,
+      domElementFound: false,
+    },
+    {
+      testId: 'tests/unit/pricing.test.ts',
+      errorMessage: 'Expected total 120.00 but received 100.00 (tax omitted)',
+      firstAttemptFailed: true,
+      retryPassed: false,
+    },
+    {
+      testId: 'tests/integration/auth.test.ts',
+      errorMessage: 'Socket hangup',
+      firstAttemptFailed: true,
+      retryPassed: true,
+    }
+  ]));
+});
+
+app.post('/api/qa/heal', (req, res) => {
+  const { testFile, testName, originalSnippet, failedLocatorOrSelector, updatedDomOrSchema, failureCategory } = req.body;
+  res.json(evaluateHealing({
+    testFile: testFile || 'tests/e2e/checkout.spec.ts',
+    testName: testName || 'User checkout flow',
+    originalSnippet: originalSnippet || "await page.locator('.btn-pay-now').click();",
+    failedLocatorOrSelector: failedLocatorOrSelector || "page.locator('.btn-pay-now')",
+    updatedDomOrSchema: updatedDomOrSchema || "<button role='button' name='Submit'>Submit</button>",
+    failureCategory: failureCategory || 'SELECTOR_FAILURE',
+  }));
+});
+
+app.get('/api/qa/graph', (req, res) => {
+  res.json(buildStandardQualityGraph().exportJson());
+});
+
+app.post('/api/qa/generate', (req, res) => {
+  const { task, criteria, framework } = req.body;
+  res.json(generateEnterpriseTestSuite({
+    featureTitle: task || 'Feature Suite',
+    acceptanceCriteria: criteria || ['Nominal execution', 'Idempotent handling', 'Security validation'],
+    framework: framework || 'vitest',
+  }));
 });
 
 // ---------------------------------------------------------------------------

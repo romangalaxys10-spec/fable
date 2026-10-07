@@ -45,6 +45,22 @@ TOOLS = [
     {"name": "fable_report", "description": "Generate immersive HTML+PDF report for the latest scan of a target",
      "inputSchema": {"type": "object", "properties": {"target": {"type": "string"}},
                      "required": ["target"]}},
+    {"name": "fable_qa_architect", "description": "QA-Architect: Generate 4-quadrant test decomposition, Playwright/API test plan, and quality gates (PramodDutta/qaskills)",
+     "inputSchema": {"type": "object", "properties": {"task": {"type": "string"}},
+                     "required": ["task"]}},
+    {"name": "qa_doctor", "description": "qaforge Doctor: Comprehensive system diagnostic and health score 0-100",
+     "inputSchema": {"type": "object", "properties": {}}},
+    {"name": "qa_analyze_risk", "description": "qaforge Risk Engine: 8-factor quantitative risk score 0-100 with top contributors",
+     "inputSchema": {"type": "object", "properties": {"task": {"type": "string"}},
+                     "required": ["task"]}},
+    {"name": "qa_impact_analysis", "description": "qaforge Change Impact: AST & git diff parser selecting minimal targeted test subset",
+     "inputSchema": {"type": "object", "properties": {"commitRange": {"type": "string"}}}},
+    {"name": "qa_triage_failure", "description": "qaforge Failure Triage: 12-category classification and root cause clustering",
+     "inputSchema": {"type": "object", "properties": {}}},
+    {"name": "qa_propose_test_heal", "description": "qaforge Self-Healing: Confidence-tiered patch proposal preserving assertions",
+     "inputSchema": {"type": "object", "properties": {}}},
+    {"name": "qa_evaluate_release", "description": "qaforge Release Gate: Release readiness verdict (PASS/BLOCKED)",
+     "inputSchema": {"type": "object", "properties": {}}},
 ]
 
 
@@ -77,6 +93,27 @@ def handle(name, args):
         return r.stdout or f"verdict: ESCALATE_TO_HUMAN (exit {r.returncode})"
     if name == "fable_report":
         r = run([sys.executable, os.path.join(PLUGIN_ROOT, "scripts", "report.py"), args["target"]])
+        return r.stdout or r.stderr
+    if name == "fable_qa_architect":
+        r = run([sys.executable, os.path.join(PLUGIN_ROOT, "vendor", "qa-skills", "qa_skills.py"), "plan", "--task", args["task"], "--json"])
+        return r.stdout or r.stderr
+    if name == "qa_doctor":
+        r = run(["npx", "tsx", os.path.join(PLUGIN_ROOT, "packages", "cli", "src", "index.ts"), "doctor", "--json"])
+        return r.stdout or r.stderr
+    if name == "qa_analyze_risk":
+        r = run(["npx", "tsx", os.path.join(PLUGIN_ROOT, "packages", "cli", "src", "index.ts"), "risk", "--task", args.get("task", ""), "--json"])
+        return r.stdout or r.stderr
+    if name == "qa_impact_analysis":
+        r = run(["npx", "tsx", os.path.join(PLUGIN_ROOT, "packages", "cli", "src", "index.ts"), "impact", "--json"])
+        return r.stdout or r.stderr
+    if name == "qa_triage_failure":
+        r = run(["npx", "tsx", os.path.join(PLUGIN_ROOT, "packages", "cli", "src", "index.ts"), "triage", "--json"])
+        return r.stdout or r.stderr
+    if name == "qa_propose_test_heal":
+        r = run(["npx", "tsx", os.path.join(PLUGIN_ROOT, "packages", "cli", "src", "index.ts"), "heal", "--json"])
+        return r.stdout or r.stderr
+    if name == "qa_evaluate_release":
+        r = run(["npx", "tsx", os.path.join(PLUGIN_ROOT, "packages", "cli", "src", "index.ts"), "release", "--json"])
         return r.stdout or r.stderr
     return json.dumps({"error": f"unknown tool {name}"})
 

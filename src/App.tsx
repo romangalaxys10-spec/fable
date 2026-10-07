@@ -9,6 +9,7 @@ import { SmartWarRoomTab } from './components/SmartWarRoomTab';
 import { VideoAnimationTab } from './components/VideoAnimationTab';
 import { SecurityGateTab } from './components/SecurityGateTab';
 import { BenchmarksAnalyticsTab } from './components/BenchmarksAnalyticsTab';
+import { QAArchitectTab } from './components/QAArchitectTab';
 import { SystemStatus } from './types';
 
 export default function App() {
@@ -45,6 +46,7 @@ export default function App() {
           />
         )}
         {activeTab === 'routing' && <RoutingLabTab />}
+        {activeTab === 'qa' && <QAArchitectTab />}
         {activeTab === 'retrieval' && <FableRetrievalTab />}
         {activeTab === 'corpus' && <CorpusManagerTab />}
         {activeTab === 'boost' && <BoostCompressionTab />}

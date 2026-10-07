@@ -25,10 +25,10 @@ interface OverviewTabProps {
 
 export const OverviewTab: React.FC<OverviewTabProps> = ({ status, onNavigate, onQuickRun }) => {
   const samplePrompts = [
+    { label: 'QA-Architect Test Plan', text: 'Write Playwright E2E and API contract tests for user checkout with 4-quadrant decomposition', mode: 'QA-ARCHITECT' },
     { label: 'Boss Fight Task', text: 'Resolve multi-threaded race condition in async streaming queue', mode: 'SMART' },
     { label: 'Speed-of-Thought', text: 'Quick fix typo in regex pattern for ISO date formatting', mode: 'ULTRA' },
-    { label: 'External Knowledge', text: 'Implement Webhook retry with exponential backoff & jitter', mode: 'BOOST' },
-    { label: 'Cinematic Story', text: 'Generate storyboard and video animation for developer onboarding', mode: 'VIDEO' }
+    { label: 'External Knowledge', text: 'Implement Webhook retry with exponential backoff & jitter', mode: 'BOOST' }
   ];
 
   return (
@@ -298,6 +298,24 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ status, onNavigate, on
             </p>
             <div className="text-[11px] font-mono text-slate-500 bg-slate-950 p-2 rounded">
               python3 scripts/harness/audit.py
+            </div>
+          </div>
+
+          <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-bold text-white flex items-center gap-2 text-sm">
+                <CheckCircle2 className="w-4 h-4 text-indigo-400" />
+                7. QA-Architect & QA Skills
+              </span>
+              <span className="text-[10px] font-mono text-indigo-400 bg-indigo-400/10 px-2 py-0.5 rounded">
+                QASkills.sh
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mb-3">
+              Pramod Dutta's testing mental models: 4-quadrant decomposition, test pyramids, Playwright & API contract patterns, zero arbitrary sleeps, and flaky quarantines.
+            </p>
+            <div className="text-[11px] font-mono text-slate-500 bg-slate-950 p-2 rounded">
+              python3 vendor/qa-skills/qa_skills.py plan
             </div>
           </div>
         </div>

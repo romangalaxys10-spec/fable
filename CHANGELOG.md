@@ -2,6 +2,58 @@
 
 All notable changes to the Fable plugin and experience studio are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v2.0.0] — 2026-10-07 — qaforge: AI-Native QA Operating System
+
+### Added
+- **qaforge Operating System Architecture (Two-Layer Design)**:
+  - **Layer A (`skills/`)**: 28 complete, structured agent instruction skills:
+    - Entry points: `qa-enterprise` (all-in-one gateway), `qa-orchestrator` (intent routing & 12-stage lifecycle).
+    - Flagship Differentiators: `qa-llm-testing` (evaluating prompt injections, output schema drift, hallucinations, tool-call accuracy) and `qa-agent-evaluation` (repeatable autonomous coding agent benchmarking harness).
+    - Killer Capabilities: `qa-impact-analysis` (AST & symbol diff test selection), `qa-risk-analysis` (8-factor mathematical risk engine 0–100), `qa-failure-triage` (12-category classification and cascade clustering), `qa-test-healing` (confidence-tiered patch proposal).
+    - Core Disciplines: `qa-discovery`, `qa-requirements`, `qa-test-strategy`, `qa-test-generation`, `qa-test-review`, `qa-test-execution`, `qa-flake-detection`, `qa-coverage-analysis`, `qa-visual`, `qa-accessibility`, `qa-api`, `qa-contract`, `qa-security`, `qa-performance`, `qa-mobile`, `qa-data`, `qa-release-gate`, `qa-reporting`, `qa-observability`, `qa-governance`.
+  - **Layer B (`packages/`)**: Executable TypeScript & Node platform:
+    - `packages/cli/`: Universal CLI supporting `qa doctor|risk|impact|plan|generate|triage|heal|release`.
+    - `packages/core/`: Zod-validated `QAContextModel`, 15 Golden Rules invariant guards, and tri-level Safe Automation Policy (READ-ONLY, LOW-RISK WRITE, HIGH-RISK).
+    - `packages/graph/`: Quality Graph traceability network linking requirements to defects.
+    - `packages/healing/`: Self-healing engine with strict assertion protection (never weaken assertions, never heal real regressions).
+    - `packages/agents/`: Multi-heuristic test generator and root cause failure clusterer.
+- **Enterprise Documentation**:
+  - `docs/enterprise-qa-gap-analysis.md`: Empirical capability matrix comparing current vs target vs gaps, plus internal migration map.
+  - `docs/architecture.md`: Two-layer system design and 12-stage lifecycle.
+  - `docs/quality-graph.md`: Traceability nodes and impact query flows.
+  - `docs/risk-engine.md`: 8-factor mathematical risk formula.
+  - `docs/failure-triage.md`: 12 standard defect categories and clustering logic.
+  - `docs/self-healing.md`: 3-tier confidence model and non-negotiable invariants.
+- **Interactive Web Studio Workbench (`src/components/QAArchitectTab.tsx`)**:
+  - Upgraded QA tab with live interactive diagnostic tools: `qa doctor` (100/100 health score), `qa risk` calculator with top contributors breakdown, `qa impact` targeted test subset selector, `qa triage` failure clusterer, `qa heal` self-healing proposal inspector, 4-quadrant strategy planner, and Layer A skills browser.
+- **Backend & MCP Server Integration**:
+  - Express API routes: `/api/qa/doctor`, `/api/qa/risk`, `/api/qa/impact`, `/api/qa/triage`, `/api/qa/heal`, `/api/qa/graph`, `/api/qa/generate`.
+  - MCP Tools: `qa_doctor`, `qa_analyze_risk`, `qa_impact_analysis`, `qa_triage_failure`, `qa_propose_test_heal`, `qa_evaluate_release`.
+
+## [v1.3.0] — 2026-10-07 — QA Skills Framework & QA-Architect Automated Routing
+
+### Added
+- **Embedded QA Skills Framework (`vendor/qa-skills/` & `skills/qa-architect/SKILL.md`)**:
+  - Curated test engineering mental models and patterns from [Pramod Dutta's QASkills.sh](https://github.com/PramodDutta/qaskills):
+    - `playwright-e2e`: Modern web testing with web-first assertions, locators, and zero arbitrary sleeps.
+    - `api-testing-rest`: REST & GraphQL contract validation, status matrices, and schema guards.
+    - `jest-vitest-unit`: Fast isolated unit invariants, deterministic mocks, and zero I/O leaks.
+    - `axe-accessibility`: Automated WCAG 2.1 AA accessibility testing and screen reader compliance.
+    - `k6-performance`: Latency percentiles, load stages, and SLA threshold testing.
+    - `flaky-test-quarantine`: Automated `@quarantine` isolation and 4-taxonomy root cause analysis.
+    - `test-case-decomposition`: 4-quadrant test case decomposition strategy.
+- **QA-Architect in Automated Fable Routing (`scripts/route.py`)**:
+  - Registered `qa_architect` engine into Fable's routing dispatch table with comprehensive keyword recognition (`test`, `tests`, `qa`, `playwright`, `vitest`, `cypress`, `flaky`, `coverage`, `e2e`, `quality gate`, `k6`, `axe`, etc.).
+  - Added Step 3 to the deterministic routing sequence: `3) QA? -> python3 vendor/qa-skills/qa_skills.py plan --task "<task>"`.
+  - Added CLI tool `vendor/qa-skills/qa_skills.py` with `list`, `search`, `inspect`, and `plan` subcommands.
+- **MCP Server QA-Architect Tool (`scripts/mcp_server.py`)**:
+  - Exposed `fable_qa_architect` tool via stdio JSON-RPC for Cursor, Claude Desktop, and Windsurf agent integration.
+- **Interactive QA-Architect Studio Tab (`src/components/QAArchitectTab.tsx`)**:
+  - Full-featured studio tab with live 4-quadrant decomposition visualizer, test pyramid breakdown (Unit 60%, API 30%, E2E 10%), curated QA skills browser, quality gate checklists, and copyable test spec scaffolds.
+  - Express API routes: `GET /api/qa/skills` and `POST /api/qa/plan`.
+- **Fable Skill & Core Workflow Integration (`skills/fable/SKILL.md`)**:
+  - Documented the QA-Architect engine, 4-quadrant decomposition, zero-arbitrary-sleep discipline, and workflow steps in the core skill definition.
+
 ## [v1.2.0] — 2026-10-07 — Production Studio & Repository Polish
 
 ### Added

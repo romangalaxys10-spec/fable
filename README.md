@@ -45,6 +45,7 @@ Fable ships with a full-stack interactive **Studio Workbench** running on port 3
 
 - **Command Hub**: Real-time status matrix for all 10 engines and Hugging Face datasets.
 - **Task Router Lab**: Interactive prompt classifier evaluating `route.py` logic with live CLI command generation.
+- **QA-Architect & QA Skills Hub**: Pramod Dutta's QASkills.sh mental models: 4-quadrant test decomposition (Positive, Negative, Boundary, Security/a11y), test pyramid distribution (Unit 60%, Integration 30%, E2E 10%), zero arbitrary timeouts, and flaky quarantine protocol.
 - **Multi-Dataset Explorer**: Real-time querying across Claude Code, Fable-5 Premium, and 2M reasoning traces with IDF scoring.
 - **Corpus Manager**: Visual browser, full-text search, and one-click lesson card recording at `~/.fable/corpus.jsonl`.
 - **Dual-Accelerator Lab**: Live token economy simulator testing Laya triage and Headroom compression (~44% token reduction).
@@ -182,6 +183,38 @@ python3 scripts/harness/install.py --from <dir|owner/repo>   # Refused unless ga
 
 ---
 
+### 7. qaforge — AI-Native QA Operating System (`skills/` & `packages/`)
+
+Engineered from the ground up as an executable, agent-native QA operating system to make coding agents perform like an elite QA organization:
+
+- **Two-Layer Architecture**:
+  - **Layer A (`skills/`)**: 28 structured agent skills (`qa-enterprise`, `qa-orchestrator`, `qa-impact-analysis`, `qa-risk-analysis`, `qa-failure-triage`, `qa-test-healing`, `qa-release-gate`, `qa-llm-testing`, `qa-agent-evaluation`, etc.).
+  - **Layer B (`packages/`)**: Modular TypeScript execution platform (`packages/cli`, `packages/core`, `packages/graph`, `packages/agents`, `packages/healing`, `packages/runners`).
+- **Killer Capabilities**:
+  - **Change Impact (`qa impact`)**: AST & symbol diff parser selecting minimal targeted test subsets rather than brute-force runs.
+  - **Quantitative Risk Engine (`qa risk`)**: 8-factor mathematical risk score (0–100) with top contributor attribution.
+  - **Failure Triage & Clusterer (`qa triage`)**: 12-category defect taxonomy clustering cascading failures to primary root causes.
+  - **Confidence-Tiered Self-Healing (`qa heal`)**: HIGH/MEDIUM/LOW confidence repairs with 4 Non-Negotiable Invariants (Never weaken assertions, never heal real regressions).
+  - **System Diagnostics (`qa doctor`)**: Health score (0–100) across runtimes, drivers, and configs.
+- **Flagship Differentiators**:
+  - **AI & LLM Testing (`skills/qa-llm-testing/`)**: Verification of output schema drift, prompt regressions, hallucination rates, citations, and prompt injection resilience.
+  - **Autonomous Coding Agent Evaluation (`skills/qa-agent-evaluation/`)**: Repeatable benchmarking harness measuring inspection discipline, test validity (failing first), and avoidance of overfitting.
+- **Quality Graph**: Bi-directional traceability network linking Requirement ➔ Feature ➔ Code ➔ API ➔ UI ➔ Test ➔ Execution ➔ Evidence ➔ Defect (`docs/quality-graph.md`).
+- **The 15 Golden Rules**: Embedded runtime invariants guaranteeing zero arbitrary sleeps, test pyramid discipline, and strict secret protection.
+
+```bash
+# Run qaforge CLI tools
+qa doctor                                         # System runtime diagnostics (100/100)
+qa risk --task "Payment gateway migration"        # 8-factor risk analysis
+qa impact HEAD~1..HEAD                            # Minimal targeted test selection
+qa generate --task "User OAuth checkout flow"     # Multi-heuristic test generation
+qa triage                                         # 12-category failure clustering
+qa heal                                           # Confidence-tiered self-healing
+qa release                                        # Release gate evaluation
+```
+
+---
+
 ## 📊 Empirical Benchmarks (46-Run Study)
 
 Data source: `benchmark_per_task.csv` — 46 isolated runs with deterministic test harnesses and real wall-clock measurements. All figures reflect verified empirical runs under identical environment constraints; zero numbers are simulated or fabricated.
@@ -283,6 +316,7 @@ Expose Fable's tools to **Cursor**, **Claude Desktop**, **Windsurf**, or any MCP
 - `fable_search`: Searches the local lesson corpus.
 - `fable_retrieve`: Fetches agent traces across all 5 Hugging Face datasets.
 - `fable_boost`: Runs the full retrieve ➔ Laya ➔ Headroom compression pipeline.
+- `fable_qa_architect`: Generates 4-quadrant test decomposition and spec scaffolds (PramodDutta/qaskills).
 - `fable_escalate`: Climbs the escalation ladder for stubborn blockers.
 - `fable_report`: Generates immersive dark-theme HTML and PDF audit reports.
 
@@ -302,6 +336,7 @@ Fable core is licensed under the **MIT License**.
 
 | Component | Upstream Source | Upstream License |
 |---|---|---|
+| `vendor/qa-skills/` | [PramodDutta/qaskills](https://github.com/PramodDutta/qaskills) | MIT |
 | `vendor/vimax/` | [HKUDS/ViMax](https://github.com/HKUDS/ViMax) | MIT |
 | `vendor/ai4animation/` | [facebookresearch/ai4animationpy](https://github.com/facebookresearch/ai4animationpy) | CC-BY-NC 4.0 (Non-commercial) |
 | `vendor/laya/` | [mizorewww/laya-mlx](https://github.com/mizorewww/laya-mlx) | MIT (Server) |

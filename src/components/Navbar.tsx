@@ -9,7 +9,8 @@ import {
   Flame, 
   Video, 
   BarChart3,
-  Server
+  Server,
+  CheckCircle2
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -22,6 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, corpusC
   const tabs = [
     { id: 'overview', label: 'Command Hub', icon: Zap },
     { id: 'routing', label: 'Task Router', icon: Compass },
+    { id: 'qa', label: 'QA-Architect', icon: CheckCircle2 },
     { id: 'retrieval', label: 'Fable Datasets', icon: Database },
     { id: 'corpus', label: `Corpus (${corpusCount})`, icon: BookOpen },
     { id: 'boost', label: 'Dual Accelerators', icon: Cpu },

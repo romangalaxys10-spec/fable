@@ -52,6 +52,7 @@ on the fast path:
 | `scripts/boost/smart_scaffold.py --task "…" [--criteria "…"]` | fable → smart bridge: runs boost research and scaffolds a ready-to-run `.smart/<slug>/` ledger (task.md, notes.md seeded with fable research, fable-research.json, stubs). Never clobbers an existing ledger. |
 | `scripts/boost/laya_boost.py` | Laya batch verdicts over `retrieve.js --json` output (stdin or `--input`). |
 | `scripts/boost/headroom_boost.py` | Headroom compression over Laya-stage output (stdin or `--input`). |
+| `vendor/qa-skills/qa_skills.py plan --task "…"` | QA-Architect test planner: 4-quadrant decomposition, test pyramid, zero-sleep guarantees, and spec scaffolds (PramodDutta/qaskills). |
 
 If the scripts can't be found under the plugin root, use `FABLE_PLUGIN_ROOT`
 only if it was set by the user; otherwise report the scripts are missing.
@@ -106,6 +107,29 @@ approval at that path's gate. Read-only fable research is allowed
 pre-approval; implementation actions are not. On the architectural path,
 the approved spec feeds `smart_scaffold.py` (criteria come from the spec).
 
+## QA-Architect & qaforge OS (AI-Native QA Operating System)
+
+When a task involves creating, verifying, or refactoring features, or when testing signals are detected (`test`, `playwright`, `cypress`, `unit test`, `api test`, `flaky`, `e2e`, `quality gate`, `risk`, `triage`, `heal`), engage the **qaforge AI-Native QA Operating System** (`skills/qa-enterprise/`, `packages/cli/`, `packages/core/`):
+
+1. **4-Quadrant & 8-Heuristic Decomposition**: Happy path, negative validation, boundaries, state transitions, concurrency/idempotency, clock drift, security, and resilience.
+2. **Change Impact Analysis (`qa impact`)**: AST and symbol diffing selecting the minimal targeted test subset rather than brute-force runs.
+3. **8-Factor Quantitative Risk Engine (`qa risk`)**: Mathematical risk score (0–100) with top contributors breakdown.
+4. **12-Category Failure Triage (`qa triage`)**: Root-cause clustering distinguishing real regressions from cascades and flakes.
+5. **Confidence-Tiered Self-Healing (`qa heal`)**: HIGH/MEDIUM/LOW confidence repairs with 4 Non-Negotiable Invariants (Never weaken assertions, never heal real regressions).
+6. **Flagship AI/LLM & Agent Evaluation**: Testing prompts, output schema drift, hallucinations, tool-call accuracy, and coding agent discipline (`skills/qa-llm-testing/`, `skills/qa-agent-evaluation/`).
+7. **The 15 Golden Rules**: Embedded invariants governing zero arbitrary sleeps, test pyramid discipline, evidence retention, and secret isolation.
+
+```bash
+# Run qaforge CLI tools
+qa doctor                                         # System runtime diagnostics
+qa risk --task "<feature description>"            # 8-factor risk analysis
+qa impact HEAD~1..HEAD                            # Minimal targeted test selection
+qa generate --task "<feature>"                    # Multi-heuristic test generation
+qa triage                                         # 12-category failure clustering
+qa heal                                           # Confidence-tiered self-healing
+qa release                                        # Release gate evaluation
+```
+
 ## Workflow
 
 ### Step 0 — ROUTE (always first)
@@ -130,6 +154,9 @@ Re-run the router on significant subtasks; routing is per-subtask.
 3. Note which external fables influenced which step of the plan.
 4. Dataset errors in the report (warm-start 500s, parquet limits) never block
    the rest of the run — retry later if needed.
+5. **QA-Architect Plan (if routed):** When `qa_architect` is routed, run
+   `python3 vendor/qa-skills/qa_skills.py plan --task "<task>"`. Apply the 4-quadrant
+   decomposition to build deterministic test suites before or alongside implementation.
 
 ### Route HARD tasks into /smart (GVS5H ledger loop)
 

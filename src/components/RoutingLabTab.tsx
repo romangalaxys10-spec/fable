@@ -23,6 +23,7 @@ export const RoutingLabTab: React.FC = () => {
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
 
   const presets = [
+    { title: 'QA & Testing', query: 'Write Playwright E2E and API contract tests for user checkout with 4-quadrant decomposition' },
     { title: 'Concurrency Deadlock', query: 'Fix race condition and thread deadlock in queue consumer worker' },
     { title: 'Format & Lint', query: 'Quick format JSON schema file and fix trailing comma' },
     { title: 'API Integration', query: 'Build GitHub webhook listener with HMAC signature verification' },
@@ -128,6 +129,7 @@ export const RoutingLabTab: React.FC = () => {
               </div>
               <div className="flex items-center gap-3 my-3">
                 <div className={`text-2xl font-black px-3 py-1.5 rounded-lg ${
+                  routingPlan.mode === 'QA-ARCHITECT' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' :
                   routingPlan.mode === 'ULTRA' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
                   routingPlan.mode === 'SMART' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' :
                   routingPlan.mode === 'VIDEO' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
@@ -138,6 +140,7 @@ export const RoutingLabTab: React.FC = () => {
               </div>
 
               <p className="text-xs text-slate-300 leading-relaxed">
+                {routingPlan.mode === 'QA-ARCHITECT' && 'QA-Architect mode engaged (QASkills.sh). Decomposes feature into 4 quadrants, generates Playwright/Vitest specs, and enforces zero arbitrary sleeps.'}
                 {routingPlan.mode === 'ULTRA' && 'Fast-lane speed protocol selected. Answer-first discipline with minimal token overhead.'}
                 {routingPlan.mode === 'BOOST' && 'Standard Fable boost pipeline: local corpus checked, followed by multi-dataset retrieval and Headroom context compression.'}
                 {routingPlan.mode === 'SMART' && 'Hard-task boss fight detected. Scaffolds GVS5H ledger loop (.smart/<slug>/) with 3+ approach ideations and adversarial test verification.'}

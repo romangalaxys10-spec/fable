@@ -42,7 +42,7 @@ export interface RoutingRecommendation {
 
 export interface RoutingPlan {
   task: string;
-  mode: 'ULTRA' | 'BOOST' | 'SMART' | 'VIDEO';
+  mode: 'ULTRA' | 'BOOST' | 'SMART' | 'VIDEO' | 'QA-ARCHITECT';
   timestamp: string;
   recommendations: RoutingRecommendation[];
   commands: string[];
@@ -116,3 +116,106 @@ export interface WarRoom {
   notes_md: string;
   gvs5h_stages: WarRoomStage[];
 }
+
+export interface QASkillItem {
+  id: string;
+  name: string;
+  title: string;
+  category: string;
+  path: string;
+  snippet: string;
+  full_content: string;
+}
+
+export interface QAArchitectPlan {
+  task: string;
+  role: string;
+  strategy_summary: string;
+  pyramid_distribution: {
+    unit: string;
+    integration_api: string;
+    e2e_ui: string;
+  };
+  four_quadrants: {
+    q1_positive_happy_path: string[];
+    q2_negative_error_handling: string[];
+    q3_boundary_resilience: string[];
+    q4_security_accessibility: string[];
+  };
+  recommended_qa_skills: string[];
+  sample_test_scaffold: string;
+  quality_gates: string[];
+}
+
+export interface DoctorReport {
+  healthScore: number;
+  overallStatus: 'HEALTHY' | 'WARNINGS' | 'DEGRADED';
+  checksPassed: number;
+  checksWarn: number;
+  checksFailed: number;
+  checks: Array<{
+    id: string;
+    name: string;
+    category: string;
+    status: 'PASS' | 'WARN' | 'FAIL';
+    details: string;
+    fixRecommendation?: string;
+  }>;
+  recommendedFixes: string[];
+}
+
+export interface RiskAnalysisResult {
+  score: number;
+  tier: 'critical' | 'high' | 'medium' | 'low';
+  topContributors: string[];
+  recommendation: string;
+  requiredTestLayers: string[];
+}
+
+export interface ImpactAnalysisResult {
+  commitRange: string;
+  totalFilesChanged: number;
+  affectedFeatures: string[];
+  affectedRoutes: string[];
+  targetedTests: {
+    unit: string[];
+    integration: string[];
+    e2e: string[];
+  };
+  explanation: string[];
+}
+
+export interface ClusteredTriageReport {
+  totalFailures: number;
+  primaryDefectsCount: number;
+  cascadingFailuresCount: number;
+  clusters: Array<{
+    clusterId: string;
+    rootCause: string;
+    category: string;
+    affectedCount: number;
+    recommendedAction?: string;
+    primaryFailure: {
+      testId: string;
+      category: string;
+      confidence: number;
+      recommendedAction: string;
+    };
+  }>;
+}
+
+export interface HealProposal {
+  testFile: string;
+  confidenceTier: 'HIGH' | 'MEDIUM' | 'LOW';
+  confidenceScore: number;
+  canAutoApply: boolean;
+  proposedPatch: string;
+  rationale: string;
+  invariantChecks: {
+    assertionWeakened: boolean;
+    timeoutIncreased: boolean;
+    regressionMasked: boolean;
+    goldenRulesPassed: boolean;
+  };
+}
+
