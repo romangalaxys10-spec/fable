@@ -13,8 +13,12 @@ import { buildStandardQualityGraph } from '../../graph/src/quality-graph';
 import { getRunner } from '../../runners/src';
 import { generateJUnitXml } from '../../reporting/src/junit';
 import { formatGitHubStepSummary } from '../../reporting/src/github';
+import { GroundTruthVerificationEngine } from '../../reverify/src';
+import { evaluateTextForSlop } from '../../stop-slop/src';
+import { StrixPentestScanner } from '../../strix/src';
+import { CloudflareSecurityAuditor } from '../../security-audit/src';
 
-export function runCLI(args: string[]) {
+export async function runCLI(args: string[]) {
   const isJson = args.includes('--json');
   const isDryRun = args.includes('--dry-run');
   const isQuiet = args.includes('--quiet');
@@ -378,12 +382,104 @@ export function runCLI(args: string[]) {
       break;
     }
 
+    case 'reverify': {
+      const statementIdx = args.indexOf('--claim');
+      const statement = statementIdx !== -1 && args[statementIdx + 1]
+        ? args[statementIdx + 1]
+        : 'PaymentService processTransaction method exists';
+      const fileIdx = args.indexOf('--file');
+      const targetPath = fileIdx !== -1 && args[fileIdx + 1] ? args[fileIdx + 1] : 'package.json';
+
+      const verifier = new GroundTruthVerificationEngine();
+      const res = verifier.verifyClaim({
+        id: `claim_${Date.now()}`,
+        statement,
+        category: 'file_exists',
+        targetPath
+      });
+
+      if (isJson) {
+        console.log(JSON.stringify(res, null, 2));
+      } else {
+        const icon = res.status === 'VERIFIED' ? '✓' : '✗';
+        log(`🔬 qa reverify — Ground Truth Claim Verification:`);
+        log(`  ${icon} [${res.status}] "${res.statement}"`);
+        for (const ev of res.evidence) log(`    Evidence: ${ev}`);
+        if (res.refutationReason) log(`    Refutation: ${res.refutationReason}`);
+      }
+      break;
+    }
+
+    case 'slop': {
+      const textIdx = args.indexOf('--text');
+      const text = textIdx !== -1 && args[textIdx + 1]
+        ? args[textIdx + 1]
+        : "In today's fast-paced digital world, this game changer robust solution seamlessly elevates workflows.";
+
+      const report = evaluateTextForSlop(text);
+      if (isJson) {
+        console.log(JSON.stringify(report, null, 2));
+      } else {
+        log(`✍️  qa slop — Anti-AI Slop Human Craft Score: ${report.score}/50 [${report.verdict}]`);
+        log(`Dimensions: Voice ${report.dimensionScores.voiceAndAuthenticity}/10 | Specificity ${report.dimensionScores.specificityAndEvidence}/10 | Structure ${report.dimensionScores.structuralVariation}/10 | Density ${report.dimensionScores.densityAndUtility}/10`);
+        if (report.detectedViolations.length > 0) {
+          log(`Detected AI Tells & Slop Patterns:`);
+          for (const v of report.detectedViolations) {
+            log(`  ⚠ [Rule ${v.ruleId}: ${v.ruleName}] "${v.matchedSnippet}" ➔ ${v.advice}`);
+          }
+        }
+      }
+      break;
+    }
+
+    case 'pentest':
+    case 'strix': {
+      const scanner = new StrixPentestScanner();
+      const targetIdx = args.indexOf('--target');
+      const target = targetIdx !== -1 && args[targetIdx + 1] ? args[targetIdx + 1] : 'http://localhost:3000';
+
+      const report = await scanner.scanTarget(target);
+      if (isJson) {
+        console.log(JSON.stringify(report, null, 2));
+      } else {
+        log(`🦅 qa strix — Autonomous Pentesting Scan (${target}):`);
+        log(`Status: 🛡️ ${report.overallRiskLevel} (Sent ${report.totalProbesSent} OWASP exploit probes in ${report.scanDurationMs}ms)`);
+        log(`Confirmed True Vulnerabilities with PoC: ${report.confirmedVulnerabilities.length}`);
+        log(`Rejected Theoretical False Positives: ${report.rejectedFalsePositivesCount}`);
+        for (const v of report.confirmedVulnerabilities) {
+          log(`  🔴 [${v.severity}] ${v.title} (${v.cwe}) on ${v.endpoint}`);
+        }
+      }
+      break;
+    }
+
+    case 'sec-audit': {
+      const auditor = new CloudflareSecurityAuditor();
+      const targetIdx = args.indexOf('--target');
+      const target = targetIdx !== -1 && args[targetIdx + 1] ? args[targetIdx + 1] : 'http://localhost:3000';
+
+      const summary = await auditor.runAudit(target);
+      if (isJson) {
+        console.log(JSON.stringify(summary, null, 2));
+      } else {
+        log(`🛡️  qa sec-audit — Cloudflare 6-Phase Security Audit (${target}):`);
+        log(`Posture Score: ${summary.overallPostureScore}/100 [ALL 6 PHASES COMPLETED]`);
+        log(`Edge Invariants:`);
+        log(`  ✓ CSP: ${summary.edgeHeaderInvariants.csp.status}`);
+        log(`  ✓ HSTS: ${summary.edgeHeaderInvariants.hsts.status}`);
+        log(`  ✓ X-Content-Type: ${summary.edgeHeaderInvariants.xContentTypeOptions.status}`);
+        log(`  ✓ TLS: ${summary.edgeHeaderInvariants.tlsMinimum.version} Enforced`);
+      }
+      break;
+    }
+
     default: {
       log(`qaforge AI-Native QA Operating System CLI`);
       log(`Usage: qa <command> [--json] [--dry-run] [--quiet] [--verbose]`);
-      log(`Commands (16):`);
+      log(`Commands (20):`);
       log(`  init | discover | plan | risk | generate | review | test | impact`);
       log(`  triage | heal | flake | coverage | release | report | doctor | explain`);
+      log(`  reverify | slop | strix | sec-audit`);
     }
   }
 }

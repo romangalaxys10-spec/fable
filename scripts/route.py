@@ -77,6 +77,30 @@ ROUTING = {
                     "test plan", "test strategy", "spec", "assert", "bdd", "tdd"],
         "exclude": [],
     },
+    "reverify": {
+        "why": "Ground Truth Verification Harness (2akouwu/reverify): verifies claims against ground truth, prevents hallucinations, enforces double-blind bug reproduction before fix",
+        "include": ["reverify", "ground truth", "verify claim", "double-blind", "bug fix", "fix bug",
+                    "verify bug", "did you check", "verify fix", "hallucin", "check carefully", "refute"],
+        "exclude": [],
+    },
+    "stop_slop": {
+        "why": "Anti-AI Slop Human Craft Engine (hardikpandya/stop-slop): eliminates AI writing tells, throat-clearing, and visual cliches; enforces 50-pt craft rubric",
+        "include": ["slop", "stop-slop", "anti-slop", "humanize", "copywriting", "craft",
+                    "writing style", "eliminate tells", "review prose", "clean docs", "authenticity"],
+        "exclude": [],
+    },
+    "strix_pentest": {
+        "why": "Autonomous Agentic Pentesting (usestrix/strix): multi-agent OWASP Top 10 vulnerability scanner with sandbox exploit validation and zero-false-positive PoC verification",
+        "include": ["strix", "pentest", "penetration test", "exploit", "dast", "poc",
+                    "sqli", "ssrf", "xss", "idor", "vulnerability scan", "hack", "sandbox exploit"],
+        "exclude": [],
+    },
+    "cf_security_audit": {
+        "why": "Cloudflare 6-Phase Security Audit (cloudflare/security-audit-skill): multi-agent fleet audit covering Recon, Taint Hunting, CVSS scoring, and Edge Hardening",
+        "include": ["cloudflare", "security audit", "cf-audit", "edge security", "hsts",
+                    "waf", "origin protection", "zero trust", "cvss", "headers audit"],
+        "exclude": [],
+    },
     "brainstorming": {
         "why": "creative/ambiguous work — intent gate before building",
         "include": ["new feature", "design", "idea", "concept", "prototype",
@@ -379,9 +403,17 @@ def main():
             + ("  [RUN]" if "external_retrieve" in routed else "  [skip]"),
             "4) QA? -> npx tsx packages/cli/src/index.ts plan --task \"<task>\" (or qa risk/impact/triage)"
             + ("  [RUN]" if "qa_architect" in routed else "  [skip]"),
-            "5) hard? -> smart_scaffold.py | creative? -> brainstorming skill | video? -> skills/video",
-            "6) blocked? -> scripts/escalate.py --blocker \"…\" --options \"a|b\"",
-            "7) done -> node scripts/record.js … (always)",
+            "5) reverify? -> npx tsx packages/cli/src/index.ts reverify --claim \"<claim>\""
+            + ("  [RUN]" if "reverify" in routed else "  [skip]"),
+            "6) stop-slop? -> npx tsx packages/cli/src/index.ts slop --text \"<text>\""
+            + ("  [RUN]" if "stop_slop" in routed else "  [skip]"),
+            "7) strix pentest? -> npx tsx packages/cli/src/index.ts strix --target \"http://localhost:3000\""
+            + ("  [RUN]" if "strix_pentest" in routed else "  [skip]"),
+            "8) cloudflare security audit? -> npx tsx packages/cli/src/index.ts sec-audit --target \"http://localhost:3000\""
+            + ("  [RUN]" if "cf_security_audit" in routed else "  [skip]"),
+            "9) hard? -> smart_scaffold.py | creative? -> brainstorming skill | video? -> skills/video",
+            "10) blocked? -> scripts/escalate.py --blocker \"…\" --options \"a|b\"",
+            "11) done -> node scripts/record.js … (always)",
         ],
     }
     print(json.dumps(plan, indent=2))

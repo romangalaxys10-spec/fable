@@ -15,6 +15,10 @@ import { buildStandardQualityGraph } from './packages/graph/src/quality-graph';
 import { QualityGovernanceAgent } from './packages/agents/src/governance-agent';
 import { QAOrchestrator } from './packages/core/src/orchestrator';
 import { QAForgeMCPServer } from './packages/mcp-server/src/server';
+import { GroundTruthVerificationEngine } from './packages/reverify/src';
+import { evaluateTextForSlop } from './packages/stop-slop/src';
+import { StrixPentestScanner } from './packages/strix/src';
+import { CloudflareSecurityAuditor } from './packages/security-audit/src';
 
 const execFileAsync = promisify(execFile);
 const __filename = fileURLToPath(import.meta.url);
@@ -630,6 +634,44 @@ app.post('/api/qa/agent-eval', (req, res) => {
     verdict: 'ELITE_CERTIFIED',
     grade: 'A+'
   });
+});
+
+// ---------------------------------------------------------------------------
+// 10b. Reverify, Stop-Slop, Strix Pentest & Cloudflare Security Audit
+// ---------------------------------------------------------------------------
+const reverifyEngine = new GroundTruthVerificationEngine();
+const strixScanner = new StrixPentestScanner();
+const cfAuditor = new CloudflareSecurityAuditor();
+
+app.post('/api/reverify/check', (req, res) => {
+  const { statement = 'package.json exists in root', targetPath = 'package.json', category = 'file_exists' } = req.body || {};
+  const result = reverifyEngine.verifyClaim({
+    id: `claim_${Date.now()}`,
+    statement,
+    targetPath,
+    category
+  });
+  res.json({
+    ...result,
+    knownFalseEntries: reverifyEngine.getKnownFalseEntries()
+  });
+});
+
+app.post('/api/stop-slop/score', (req, res) => {
+  const { text = "In today's fast-paced digital world, this game changer robust solution elevates workflows." } = req.body || {};
+  res.json(evaluateTextForSlop(text));
+});
+
+app.post('/api/strix/scan', async (req, res) => {
+  const { target = 'http://localhost:3000' } = req.body || {};
+  const report = await strixScanner.scanTarget(target);
+  res.json(report);
+});
+
+app.post('/api/security-audit/run', async (req, res) => {
+  const { target = 'http://localhost:3000' } = req.body || {};
+  const report = await cfAuditor.runAudit(target);
+  res.json(report);
 });
 
 // 11. Universal Token Efficiency Protocol (v3.3.0) Endpoints
