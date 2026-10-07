@@ -52,6 +52,7 @@ on the fast path:
 | `scripts/boost/smart_scaffold.py --task "…" [--criteria "…"]` | fable → smart bridge: runs boost research and scaffolds a ready-to-run `.smart/<slug>/` ledger (task.md, notes.md seeded with fable research, fable-research.json, stubs). Never clobbers an existing ledger. |
 | `scripts/boost/laya_boost.py` | Laya batch verdicts over `retrieve.js --json` output (stdin or `--input`). |
 | `scripts/boost/headroom_boost.py` | Headroom compression over Laya-stage output (stdin or `--input`). |
+| `scripts/token_efficiency.py budget --task "…"` | Universal Token Efficiency Protocol v3.3.0: 5-phase context budget (~35k target), DTOC output compression, 6-field subagent scoping, and AST-first read auditor. |
 | `vendor/qa-skills/qa_skills.py plan --task "…"` | QA-Architect test planner: 4-quadrant decomposition, test pyramid, zero-sleep guarantees, and spec scaffolds (PramodDutta/qaskills). |
 
 If the scripts can't be found under the plugin root, use `FABLE_PLUGIN_ROOT`

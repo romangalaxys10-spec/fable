@@ -11,12 +11,22 @@ All notable changes to the Fable plugin and experience studio are documented in 
     - Flagship Differentiators: `qa-llm-testing` (evaluating prompt injections, output schema drift, hallucinations, tool-call accuracy) and `qa-agent-evaluation` (repeatable autonomous coding agent benchmarking harness).
     - Killer Capabilities: `qa-impact-analysis` (AST & symbol diff test selection), `qa-risk-analysis` (8-factor mathematical risk engine 0–100), `qa-failure-triage` (12-category classification and cascade clustering), `qa-test-healing` (confidence-tiered patch proposal).
     - Core Disciplines: `qa-discovery`, `qa-requirements`, `qa-test-strategy`, `qa-test-generation`, `qa-test-review`, `qa-test-execution`, `qa-flake-detection`, `qa-coverage-analysis`, `qa-visual`, `qa-accessibility`, `qa-api`, `qa-contract`, `qa-security`, `qa-performance`, `qa-mobile`, `qa-data`, `qa-release-gate`, `qa-reporting`, `qa-observability`, `qa-governance`.
-  - **Layer B (`packages/`)**: Executable TypeScript & Node platform:
-    - `packages/cli/`: Universal CLI supporting `qa doctor|risk|impact|plan|generate|triage|heal|release`.
-    - `packages/core/`: Zod-validated `QAContextModel`, 15 Golden Rules invariant guards, and tri-level Safe Automation Policy (READ-ONLY, LOW-RISK WRITE, HIGH-RISK).
-    - `packages/graph/`: Quality Graph traceability network linking requirements to defects.
+  - **Layer B (`packages/`)**: Complete executable TypeScript & Node platform:
+    - `packages/cli/`: Universal CLI supporting all 16 commands: `init`, `discover`, `plan`, `risk`, `generate`, `review`, `test`, `impact`, `triage`, `heal`, `flake`, `coverage`, `release`, `report`, `doctor`, `explain` (with `--json`, `--quiet`, `--dry-run`).
+    - `packages/core/`: Zod-validated `QAContextModel`, 12-stage `QALifecycleEngine`, `QAOrchestrator`, 15 Golden Rules invariant guards, and tri-level Safe Automation Policy.
+    - `packages/agents/`: 8 specialized sub-agents: `DiscoveryAgent`, `RequirementsRiskAgent`, `TestStrategyAgent`, `TestGeneratorAgent`, `ExecutionAgent`, `TriageAgent`, `SelfHealingAgent`, `QualityGovernanceAgent`.
+    - `packages/runners/`: 5 test execution adapters: `PlaywrightRunner`, `PytestRunner`, `K6PerformanceRunner`, `OwaspZapRunner`, `AppiumMobileRunner`.
+    - `packages/data/`: Test Data Engineering with `SeedGenerator`, `TestDataFactory`, `UserFixtureBuilder`, `OrderFixtureBuilder`, and PII/secret `DataMasker`.
+    - `packages/reporting/`: Multi-destination enterprise reporting: `JUnitXml`, `Allure 2`, `Slack Block Kit`, `Jira Defect JSON`, `GitHub Step Summary`, `GitLab Code Quality`.
+    - `packages/reasoning/`: Multi-Model Reasoning Router with Deterministic-First rule engine and explainability records (`input`, `objective`, `evidence`, `output`, `confidence`, `fallback`).
+    - `packages/graph/`: Quality Graph traceability network linking requirements to features, tests, executions, and defects.
     - `packages/healing/`: Self-healing engine with strict assertion protection (never weaken assertions, never heal real regressions).
-    - `packages/agents/`: Multi-heuristic test generator and root cause failure clusterer.
+    - `packages/mcp-server/`: 11 MCP tools (`discover_project`, `analyze_risk`, `list_relevant_tests`, `generate_tests`, `run_tests`, `get_failure_evidence`, `triage_failure`, `propose_test_heal`, `analyze_flake`, `generate_quality_report`, `evaluate_release`).
+- **Universal Token Efficiency Protocol Integration (v3.3.0)**:
+  - Added Universal Token Efficiency Protocol (`skills/token-efficiency/SKILL.md` & `scripts/token_efficiency.py`).
+  - Derived from Pi coding agent, Databricks MemEx, and Hernanz 60B-token behavioral agent rules.
+  - Slashes agent context consumption from ~280k to ~35k tokens (8x reduction).
+  - Integrated into Fable Task Router (`scripts/route.py` and `src/components/RoutingLabTab.tsx`) with interactive 5-phase context budget calculator, live DTOC tool output compressor, 6-field scoped subagent prompt generator, and AST-first read compliance auditor.
 - **Enterprise Documentation**:
   - `docs/enterprise-qa-gap-analysis.md`: Empirical capability matrix comparing current vs target vs gaps, plus internal migration map.
   - `docs/architecture.md`: Two-layer system design and 12-stage lifecycle.

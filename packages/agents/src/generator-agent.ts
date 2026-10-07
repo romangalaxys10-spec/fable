@@ -24,6 +24,8 @@ export interface GeneratedSuiteReport {
   specFileContent: string;
 }
 
+export type EnterpriseTestSuite = GeneratedSuiteReport;
+
 export function generateEnterpriseTestSuite(req: GenerationRequest): GeneratedSuiteReport {
   const feature = req.featureTitle;
   const framework = req.framework || 'vitest';

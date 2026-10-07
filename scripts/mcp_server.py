@@ -61,6 +61,16 @@ TOOLS = [
      "inputSchema": {"type": "object", "properties": {}}},
     {"name": "qa_evaluate_release", "description": "qaforge Release Gate: Release readiness verdict (PASS/BLOCKED)",
      "inputSchema": {"type": "object", "properties": {}}},
+    {"name": "fable_token_efficiency", "description": "Universal Token Efficiency Protocol v3.3.0: 5-phase budget, DTOC output compression, 6-field subagent scoping, and AST-first read auditing",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["budget", "compress", "subagent", "audit_read"]},
+         "task": {"type": "string"},
+         "input": {"type": "string"},
+         "type": {"type": "string"},
+         "file": {"type": "string"},
+         "goal": {"type": "string"},
+         "lines": {"type": "string"}
+     }, "required": ["action"]}},
 ]
 
 
@@ -114,6 +124,19 @@ def handle(name, args):
         return r.stdout or r.stderr
     if name == "qa_evaluate_release":
         r = run(["npx", "tsx", os.path.join(PLUGIN_ROOT, "packages", "cli", "src", "index.ts"), "release", "--json"])
+        return r.stdout or r.stderr
+    if name == "fable_token_efficiency":
+        action = args.get("action", "budget")
+        cmd = [sys.executable, os.path.join(PLUGIN_ROOT, "scripts", "token_efficiency.py"), action, "--json"]
+        if action == "budget":
+            cmd += ["--task", args.get("task", "General Task")]
+        elif action == "compress":
+            cmd += ["--input", args.get("input", ""), "--type", args.get("type", "generic")]
+        elif action == "subagent":
+            cmd += ["--file", args.get("file", "src/main.ts"), "--goal", args.get("goal", "Refactor"), "--lines", str(args.get("lines", "1-50"))]
+        elif action == "audit_read":
+            cmd += ["--file", args.get("file", "src/main.ts"), "--lines", str(args.get("lines", "50"))]
+        r = run(cmd)
         return r.stdout or r.stderr
     return json.dumps({"error": f"unknown tool {name}"})
 

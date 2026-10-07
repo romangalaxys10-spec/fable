@@ -59,6 +59,14 @@ ROUTING = {
                     "failed twice", "still failing", "hard"],
         "exclude": [],
     },
+    "token_efficiency": {
+        "why": "Universal Token Efficiency Protocol v3.3.0 (AST-first reading, DTOC output compression, 5-phase budget, 6-field subagent scoping, 8x token savings)",
+        "include": ["token", "tokens", "efficiency", "token-efficiency", "budget", "context",
+                    "compress", "dtoc", "ast-first", "subagent", "prompt-optimization",
+                    "large codebase", "cost", "headroom", "waste", "truncate", "jit",
+                    "code", "refactor", "analyze", "pipeline", "debug"],
+        "exclude": ["purely creative"],
+    },
     "qa_architect": {
         "why": "qaforge AI-Native QA Operating System (Change Impact, 8-Factor Risk, 12-Category Triage, Self-Healing, 15 Golden Rules)",
         "include": ["test", "tests", "testing", "qa", "qa-architect", "e2e", "playwright",
@@ -365,13 +373,15 @@ def main():
         "order": [
             "0) route (this output)",
             "1) corpus: node scripts/search.js \"<task>\"" + ("  [RUN]" if "corpus_search" in routed else "  [skip]"),
-            "2) boost: python3 scripts/boost/boost.py --task \"<task>\""
+            "2) token-budget: python3 scripts/token_efficiency.py budget --task \"<task>\""
+            + ("  [RUN]" if "token_efficiency" in routed else "  [skip]"),
+            "3) boost: python3 scripts/boost/boost.py --task \"<task>\""
             + ("  [RUN]" if "external_retrieve" in routed else "  [skip]"),
-            "3) QA? -> npx tsx packages/cli/src/index.ts plan --task \"<task>\" (or qa risk/impact/triage)"
+            "4) QA? -> npx tsx packages/cli/src/index.ts plan --task \"<task>\" (or qa risk/impact/triage)"
             + ("  [RUN]" if "qa_architect" in routed else "  [skip]"),
-            "4) hard? -> smart_scaffold.py | creative? -> brainstorming skill | video? -> skills/video",
-            "5) blocked? -> scripts/escalate.py --blocker \"…\" --options \"a|b\"",
-            "6) done -> node scripts/record.js … (always)",
+            "5) hard? -> smart_scaffold.py | creative? -> brainstorming skill | video? -> skills/video",
+            "6) blocked? -> scripts/escalate.py --blocker \"…\" --options \"a|b\"",
+            "7) done -> node scripts/record.js … (always)",
         ],
     }
     print(json.dumps(plan, indent=2))
