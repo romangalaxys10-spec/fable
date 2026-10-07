@@ -10,6 +10,8 @@
 > **Mission**: Turn AI coding agents (Claude Code, Cursor, Windsurf, Cline, Codex, Copilot, Gemini CLI, Zed) from passive script generators into an **autonomous, evidence-driven, elite QA organization**.
 >
 > **Competitive Targets**: Tricentis, mabl, BrowserStack, Applitools, Katalon, Cypress Cloud, and the modern Playwright ecosystem — combined with universal token optimization.
+>
+> 🔑 **ZERO-CONFIG AUTOPILOT GUARANTEE**: Every feature (Hugging Face retrieval, Reverify ground truth checks, Stop-Slop anti-ai craft scoring, Strix autonomous DAST pentesting, Cloudflare security audits, and token efficiency budgeting) runs completely out-of-the-box with **zero required API keys, external tokens, or cloud service registrations**. If any service endpoint or external provider is missing credentials, Fable's built-in **Zero-Config Bypass Proxy** automatically engages high-fidelity offline simulation and local deterministic execution.
 
 ---
 

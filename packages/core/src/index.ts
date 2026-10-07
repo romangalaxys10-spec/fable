@@ -6,3 +6,4 @@ export * from './safe-automation';
 export * from './golden-rules';
 export * from './lifecycle';
 export * from './orchestrator';
+export * from './zero-config';
