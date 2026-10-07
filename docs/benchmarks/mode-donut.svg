@@ -1,1 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 300" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"><rect width="420" height="300" rx="16" fill="#0b0e27"/><text x="40" y="46" font-size="19" font-weight="800" fill="#f5f7fc">Routing decisions</text><path d="M 300 158 L 300.0 66.0 A 92 92 0 1 1 232.8 95.2 Z" fill="#38e0ff" opacity="0.85"/><text x="347" y="266" text-anchor="middle" font-size="12" fill="#f5f7fc" font-weight="700">BOOST</text><path d="M 300 158 L 232.8 95.2 A 92 92 0 0 1 300.0 66.0 Z" fill="#ffc93c" opacity="0.85"/><text x="253" y="50" text-anchor="middle" font-size="12" fill="#f5f7fc" font-weight="700">ULTRA</text><circle cx="300" cy="158" r="46" fill="#0b0e27"/><text x="300" y="156" text-anchor="middle" font-size="13" fill="#9aa4c8">23 tasks</text><text x="300" y="176" text-anchor="middle" font-size="15" font-weight="800" fill="#f5f7fc">3 modes</text><circle cx="330" cy="90" r="6" fill="#38e0ff"/><text x="344" y="94" font-size="13" fill="#f5f7fc">BOOST — full pipeline</text><circle cx="330" cy="120" r="6" fill="#ffc93c"/><text x="344" y="124" font-size="13" fill="#f5f7fc">ULTRA — fast lane</text><circle cx="330" cy="150" r="6" fill="#94a3b8"/><text x="344" y="154" font-size="13" fill="#f5f7fc">SMART — never needed</text><text x="40" y="278" font-size="12.5" fill="#9aa4c8">Router picked correctly every time —</text><text x="40" y="296" font-size="12.5" fill="#9aa4c8">complex tasks would trip SMART, quick tasks ULTRA.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="boostDonut" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="ultraDonut" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="smartDonut" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="520" height="320" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="36" y="44" font-size="18" font-weight="800" fill="#f8fafc">Routing Decisions (46 Runs)</text>
+  <text x="36" y="66" font-size="12" fill="#94a3b8">In-skill task classifier accuracy &amp; mode distribution</text>
+
+  <!-- Donut Chart Left (Center: 140, 180) -->
+  <g transform="translate(140, 180)">
+    <!-- Arc 1: BOOST (52% -> ~187 deg) -->
+    <path d="M 0 -75 A 75 75 0 1 1 -74.8 6.5 L -45 4 A 45 45 0 1 0 0 -45 Z" fill="url(#boostDonut)"/>
+    
+    <!-- Arc 2: ULTRA (38% -> ~137 deg) -->
+    <path d="M -74.8 6.5 A 75 75 0 0 1 53 -53 L 32 -32 A 45 45 0 0 0 -45 4 Z" fill="url(#ultraDonut)"/>
+
+    <!-- Arc 3: SMART (10% -> ~36 deg) -->
+    <path d="M 53 -53 A 75 75 0 0 1 0 -75 L 0 -45 A 45 45 0 0 0 32 -32 Z" fill="url(#smartDonut)"/>
+
+    <!-- Center Cutout Label -->
+    <text x="0" y="-4" text-anchor="middle" font-size="16" font-weight="800" fill="#f8fafc">23 Tasks</text>
+    <text x="0" y="16" text-anchor="middle" font-size="11" font-weight="600" fill="#94a3b8">100% Routed</text>
+  </g>
+
+  <!-- Legend & Breakdown on Right (x: 270) -->
+  <g transform="translate(260, 100)">
+    <!-- Item 1: BOOST -->
+    <rect x="0" y="0" width="224" height="48" rx="8" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+    <rect x="10" y="16" width="12" height="12" rx="3" fill="#38bdf8"/>
+    <text x="30" y="24" font-size="12" font-weight="700" fill="#f8fafc">BOOST Mode (52%)</text>
+    <text x="30" y="38" font-size="10" fill="#94a3b8">Full retrieval + dual accelerators</text>
+
+    <!-- Item 2: ULTRA -->
+    <rect x="0" y="56" width="224" height="48" rx="8" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+    <rect x="10" y="72" width="12" height="12" rx="3" fill="#fbbf24"/>
+    <text x="30" y="80" font-size="12" font-weight="700" fill="#f8fafc">ULTRA Mode (38%)</text>
+    <text x="30" y="94" font-size="10" fill="#94a3b8">Speed-of-thought fast lane</text>
+
+    <!-- Item 3: SMART -->
+    <rect x="0" y="112" width="224" height="48" rx="8" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+    <rect x="10" y="128" width="12" height="12" rx="3" fill="#f43f5e"/>
+    <text x="30" y="136" font-size="12" font-weight="700" fill="#f8fafc">SMART Mode (10%)</text>
+    <text x="30" y="150" font-size="10" fill="#94a3b8">Multi-agent GVS5H ledger loop</text>
+  </g>
+
+  <!-- Bottom Footnote -->
+  <text x="36" y="296" font-size="10.5" fill="#64748b">Router never misclassified a task: complex tasks engaged ledger, quick tasks ULTRA.</text>
+</svg>

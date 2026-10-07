@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="50%" stop-color="#090d16"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7e22ce"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="520" rx="20" fill="url(#bgGrad)" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <text x="44" y="48" font-size="22" font-weight="800" fill="#f8fafc">⚡ Fable Architecture — The Self-Improving Agent Loop</text>
+  <text x="44" y="74" font-size="13" fill="#94a3b8">Multi-dataset retrieval, on-device triage, context compression, and adversarial ledger loop</text>
+
+  <!-- Node 1: Task Input -->
+  <g transform="translate(44, 110)">
+    <rect width="180" height="88" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+    <text x="16" y="28" font-size="11" font-weight="700" fill="#fbbf24" letter-spacing="0.05em">INCOMING TASK</text>
+    <text x="16" y="50" font-size="14" font-weight="700" fill="#f8fafc">Agent Prompt</text>
+    <text x="16" y="70" font-size="11" fill="#64748b">Coding, refactor, or bug</text>
+  </g>
+
+  <!-- Arrow: Input to Router -->
+  <path d="M 224 154 L 268 154" stroke="#475569" stroke-width="2" stroke-dasharray="4,4"/>
+  <polygon points="268,150 276,154 268,158" fill="#475569"/>
+
+  <!-- Node 2: In-Skill Router (Step 0) -->
+  <g transform="translate(276, 102)">
+    <rect width="210" height="104" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="14" y="-10" width="84" height="20" rx="10" fill="#f59e0b"/>
+    <text x="56" y="4" font-size="10" font-weight="800" fill="#020617" text-anchor="middle">STEP 0</text>
+    <text x="16" y="34" font-size="14" font-weight="800" fill="#ffffff">Task Router</text>
+    <text x="16" y="54" font-size="11" font-mono" fill="#fbbf24">scripts/route.py</text>
+    <text x="16" y="74" font-size="11" fill="#94a3b8">Keyword matrix + Laya</text>
+    <text x="16" y="90" font-size="10" fill="#64748b">ULTRA · BOOST · SMART</text>
+  </g>
+
+  <!-- Route Fork Branching -->
+  <!-- 1. Top branch to ULTRA -->
+  <path d="M 486 130 C 530 130, 530 114, 570 114" stroke="#06b6d4" stroke-width="2"/>
+  <polygon points="570,110 578,114 570,118" fill="#06b6d4"/>
+  <text x="526" y="104" font-size="10" font-weight="700" fill="#06b6d4">SPEED</text>
+
+  <!-- Node 3A: ULTRA Speed Fast Lane -->
+  <g transform="translate(578, 80)">
+    <rect width="180" height="70" rx="10" fill="#0f172a" stroke="#06b6d4" stroke-width="1.2"/>
+    <text x="14" y="24" font-size="12" font-weight="800" fill="#38bdf8">⚡ ULTRA Speed Lane</text>
+    <text x="14" y="42" font-size="11" fill="#94a3b8">Single-pass, answer-first</text>
+    <text x="14" y="58" font-size="10" font-mono fill="#64748b">--local-only (~0.04s)</text>
+  </g>
+
+  <!-- 2. Middle branch to Knowledge & Accelerators -->
+  <path d="M 486 160 C 520 160, 520 220, 550 220" stroke="#f59e0b" stroke-width="2"/>
+  <polygon points="550,216 558,220 550,224" fill="#f59e0b"/>
+
+  <!-- Knowledge & Boost Pipeline Box -->
+  <g transform="translate(558, 170)">
+    <rect width="358" height="150" rx="14" fill="#090d16" stroke="#334155" stroke-width="1.5"/>
+    <text x="16" y="26" font-size="11" font-weight="800" fill="#fbbf24" letter-spacing="0.05em">BOOST ENGINE CHAIN</text>
+    
+    <!-- Sub-node: Retrieval -->
+    <rect x="14" y="38" width="156" height="46" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="1"/>
+    <text x="24" y="56" font-size="11" font-weight="700" fill="#38bdf8">HF 5+ Fable Datasets</text>
+    <text x="24" y="72" font-size="10" fill="#94a3b8">retrieve.js (Bigram/IDF)</text>
+
+    <!-- Sub-node: Laya -->
+    <rect x="186" y="38" width="156" height="46" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+    <text x="196" y="56" font-size="11" font-weight="700" fill="#c084fc">Laya On-Device Triage</text>
+    <text x="196" y="72" font-size="10" fill="#94a3b8">MLX Apple Silicon (~10-40ms)</text>
+
+    <!-- Sub-node: Headroom -->
+    <rect x="14" y="92" width="328" height="46" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+    <text x="24" y="110" font-size="11" font-weight="700" fill="#34d399">Headroom Context Compression</text>
+    <text x="24" y="126" font-size="10" fill="#94a3b8">Neural Kompress + Light-Dedupe (~44% Token Reduction)</text>
+  </g>
+
+  <!-- 3. Bottom branch to Smart War Room -->
+  <path d="M 381 206 C 381 290, 200 320, 200 360" stroke="#f43f5e" stroke-width="2"/>
+  <polygon points="196,360 200,368 204,360" fill="#f43f5e"/>
+  <text x="270" y="290" font-size="10" font-weight="700" fill="#f43f5e">HARD TASK</text>
+
+  <!-- Node 4: Smart War Room (.smart/) -->
+  <g transform="translate(44, 368)">
+    <rect width="400" height="126" rx="14" fill="#111827" stroke="#f43f5e" stroke-width="1.5"/>
+    <text x="18" y="26" font-size="11" font-weight="800" fill="#fb7185" letter-spacing="0.05em">SMART WAR ROOM (.smart/)</text>
+    <text x="18" y="46" font-size="13" font-weight="800" fill="#ffffff">GVS5H Multi-Agent Ledger Loop</text>
+    <text x="18" y="66" font-size="11" fill="#94a3b8">1. Plan ➔ 2. Ideate (3+ Distinct) ➔ 3. Adversarial Test-Spec</text>
+    <text x="18" y="84" font-size="11" fill="#94a3b8">4. Fresh Workers ➔ 5. Deterministic Hard Verification</text>
+    <text x="18" y="106" font-size="10" font-mono fill="#fb7185">Rule: Failed verification overrides any claim of "done"</text>
+  </g>
+
+  <!-- Arrow: Smart / Boost Loop to Compounding Corpus -->
+  <path d="M 444 431 L 490 431" stroke="#10b981" stroke-width="2"/>
+  <polygon points="490,427 498,431 490,435" fill="#10b981"/>
+
+  <!-- Node 5: Compounding Lesson Corpus -->
+  <g transform="translate(498, 368)">
+    <rect width="418" height="126" rx="14" fill="#064e3b" stroke="#10b981" stroke-width="1.5" fill-opacity="0.3"/>
+    <text x="20" y="26" font-size="11" font-weight="800" fill="#34d399" letter-spacing="0.05em">COMPOUNDING FEEDBACK LOOP</text>
+    <text x="20" y="48" font-size="14" font-weight="800" fill="#ffffff">Local Lesson Corpus (~/.fable/corpus.jsonl)</text>
+    <text x="20" y="68" font-size="11" fill="#a7f3d0">Deduped Cards: Task · Context · Outcome · Gotchas · Learnings</text>
+    <text x="20" y="88" font-size="11" fill="#6ee7b7">+ SelfLearner vector memory (embeddings)</text>
+    <text x="20" y="108" font-size="11" font-weight="700" fill="#34d399">⚡ Next similar task starts with proven scouting reports</text>
+  </g>
+
+  <!-- Feedback Arrow back to Task Start -->
+  <path d="M 707 368 C 707 340, 940 340, 940 180 C 940 100, 134 80, 134 110" stroke="#10b981" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <polygon points="130,110 134,118 138,110" fill="#10b981"/>
+</svg>

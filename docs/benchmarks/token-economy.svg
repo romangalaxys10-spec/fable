@@ -1,1 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 340" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"><rect width="860" height="340" rx="16" fill="#0b0e27"/><text x="40" y="48" font-size="20" font-weight="800" fill="#f5f7fc">Token economy — the price of awareness</text><text x="40" y="74" font-size="13" fill="#9aa4c8">Mean per-task tokens · prompt (context) and completion (output)</text><text x="240" y="130" text-anchor="middle" font-size="13" fill="#9aa4c8">Prompt context</text><rect x="130" y="147" width="220" height="123" rx="8" fill="#94a3b8" opacity="0.9"/><text x="240" y="137" text-anchor="middle" font-size="14" font-weight="700" fill="#f5f7fc">13,815</text><rect x="390" y="116" width="220" height="154" rx="8" fill="#38e0ff" opacity="0.9"/><text x="500" y="106" text-anchor="middle" font-size="14" font-weight="700" fill="#38e0ff">17,286</text><text x="240" y="292" text-anchor="middle" font-size="12" fill="#9aa4c8">baseline</text><text x="500" y="292" text-anchor="middle" font-size="12" fill="#9aa4c8">+fable +25%</text><text x="590" y="130" text-anchor="middle" font-size="13" fill="#9aa4c8">Final output</text><rect x="480" y="269" width="220" height="1" rx="8" fill="#94a3b8" opacity="0.9"/><text x="590" y="259" text-anchor="middle" font-size="14" font-weight="700" fill="#f5f7fc">166</text><rect x="740" y="268" width="220" height="2" rx="8" fill="#ffc93c" opacity="0.9"/><text x="850" y="258" text-anchor="middle" font-size="14" font-weight="700" fill="#ffc93c">255</text><text x="590" y="292" text-anchor="middle" font-size="12" fill="#9aa4c8">baseline</text><text x="850" y="292" text-anchor="middle" font-size="12" fill="#9aa4c8">+fable +54%</text><text x="40" y="322" font-size="11.5" fill="#94a3b8">The completion increase is mode-notes + lesson citations — ULTRA strips those for speed tasks (see skill §7).</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="slateGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="860" height="360" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <text x="40" y="46" font-size="20" font-weight="800" fill="#f8fafc">Token Economy — The Price &amp; Return of Awareness</text>
+  <text x="40" y="72" font-size="13" fill="#94a3b8">Mean per-task tokens: Prompt context (ingest) vs Completion tokens (output)</text>
+
+  <!-- Left Column: Prompt Context -->
+  <g transform="translate(60, 95)">
+    <rect width="340" height="200" rx="12" fill="#111827" stroke="#1e293b" stroke-width="1.2"/>
+    <text x="24" y="32" font-size="14" font-weight="700" fill="#f8fafc">Prompt Context (Tokens)</text>
+    <text x="24" y="50" font-size="11" fill="#64748b">Transcripts + Lesson Cards in Context</text>
+
+    <!-- Baseline Bar -->
+    <rect x="24" y="100" width="120" height="60" rx="6" fill="url(#slateGrad)"/>
+    <text x="84" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#cbd5e1">13,815</text>
+    <text x="84" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="#94a3b8">Baseline</text>
+
+    <!-- Fable Bar -->
+    <rect x="174" y="85" width="120" height="75" rx="6" fill="url(#cyanGrad)"/>
+    <text x="234" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#38bdf8">17,286</text>
+    <text x="234" y="176" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8">+25% Context</text>
+
+    <!-- Overhead Badge -->
+    <rect x="210" y="20" width="105" height="22" rx="6" fill="#0284c7" fill-opacity="0.2" stroke="#0284c7" stroke-width="1"/>
+    <text x="262" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#38bdf8">Knowledge Pack</text>
+  </g>
+
+  <!-- Right Column: Final Output -->
+  <g transform="translate(460, 95)">
+    <rect width="340" height="200" rx="12" fill="#111827" stroke="#1e293b" stroke-width="1.2"/>
+    <text x="24" y="32" font-size="14" font-weight="700" fill="#f8fafc">Final Completion Output</text>
+    <text x="24" y="50" font-size="11" fill="#64748b">Generated solution code + citations</text>
+
+    <!-- Baseline Bar -->
+    <rect x="24" y="115" width="120" height="45" rx="6" fill="url(#slateGrad)"/>
+    <text x="84" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#cbd5e1">166</text>
+    <text x="84" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="#94a3b8">Baseline</text>
+
+    <!-- Fable Bar -->
+    <rect x="174" y="92" width="120" height="68" rx="6" fill="url(#amberGrad)"/>
+    <text x="234" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#fbbf24">255</text>
+    <text x="234" y="176" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">+54% Output</text>
+
+    <!-- Overhead Badge -->
+    <rect x="210" y="20" width="105" height="22" rx="6" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-width="1"/>
+    <text x="262" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#fbbf24">Mode &amp; Citations</text>
+  </g>
+
+  <!-- Footer Note -->
+  <rect x="40" y="312" width="780" height="32" rx="6" fill="#161b3a" stroke="#252f5a"/>
+  <text x="56" y="332" font-size="11" fill="#94a3b8">The completion increase reflects mode notes and lesson citations — on speed-class tasks, the router switches to ULTRA which strips citations automatically.</text>
+</svg>

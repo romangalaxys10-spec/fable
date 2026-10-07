@@ -1,1 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"><rect width="860" height="300" rx="16" fill="#0b0e27"/><text x="40" y="46" font-size="20" font-weight="800" fill="#f5f7fc">The self-improvement loop — measured</text><text x="40" y="72" font-size="13" fill="#9aa4c8">Lesson cards distilled by record.js after each fable-arm task · 0 → 23 in one benchmark run</text><polyline points="70,220 103,215 136,210 170,205 203,200 236,195 269,190 302,185 335,180 369,175 402,170 435,165 468,160 501,155 535,150 568,145 601,140 634,135 667,130 700,125 734,120 767,115 800,110" fill="none" stroke="#34d399" stroke-width="3"/><circle cx="70" cy="220" r="4" fill="#34d399"/><circle cx="103" cy="215" r="4" fill="#34d399"/><circle cx="136" cy="210" r="4" fill="#34d399"/><circle cx="170" cy="205" r="4" fill="#34d399"/><circle cx="203" cy="200" r="4" fill="#34d399"/><circle cx="236" cy="195" r="4" fill="#34d399"/><circle cx="269" cy="190" r="4" fill="#34d399"/><circle cx="302" cy="185" r="4" fill="#34d399"/><circle cx="335" cy="180" r="4" fill="#34d399"/><circle cx="369" cy="175" r="4" fill="#34d399"/><circle cx="402" cy="170" r="4" fill="#34d399"/><circle cx="435" cy="165" r="4" fill="#34d399"/><circle cx="468" cy="160" r="4" fill="#34d399"/><circle cx="501" cy="155" r="4" fill="#34d399"/><circle cx="535" cy="150" r="4" fill="#34d399"/><circle cx="568" cy="145" r="4" fill="#34d399"/><circle cx="601" cy="140" r="4" fill="#34d399"/><circle cx="634" cy="135" r="4" fill="#34d399"/><circle cx="667" cy="130" r="4" fill="#34d399"/><circle cx="700" cy="125" r="4" fill="#34d399"/><circle cx="734" cy="120" r="4" fill="#34d399"/><circle cx="767" cy="115" r="4" fill="#34d399"/><circle cx="800" cy="110" r="4" fill="#34d399"/><text x="70" y="252" font-size="12" fill="#94a3b8">task 1</text><text x="750" y="252" font-size="12" fill="#94a3b8">task 23</text><text x="40" y="284" font-size="12.5" fill="#38e0ff">Cross-category transfers proven: D4←D1 (design), L4←L1 (coding→logic), X3←T3+X1, S3←T3 — later agents cited earlier lessons.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 340" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="860" height="340" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <text x="40" y="46" font-size="20" font-weight="800" fill="#f8fafc">The Self-Improvement Loop — Empirically Measured</text>
+  <text x="40" y="72" font-size="13" fill="#94a3b8">Lesson cards distilled by record.js after each fable task: 0 → 23 in one benchmark run</text>
+
+  <!-- Chart Canvas (x: 80 to 800, y: 100 to 240) -->
+  <g transform="translate(40, 20)">
+    <!-- Horizontal Grid Lines -->
+    <line x1="40" y1="210" x2="760" y2="210" stroke="#1e293b" stroke-width="1"/>
+    <text x="30" y="214" font-size="10" fill="#64748b" text-anchor="end">0</text>
+
+    <line x1="40" y1="165" x2="760" y2="165" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="30" y="169" font-size="10" fill="#64748b" text-anchor="end">10</text>
+
+    <line x1="40" y1="120" x2="760" y2="120" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="30" y="124" font-size="10" fill="#64748b" text-anchor="end">20</text>
+
+    <line x1="40" y1="90" x2="760" y2="90" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="30" y="94" font-size="10" fill="#64748b" text-anchor="end">25</text>
+
+    <!-- Area Gradient Fill -->
+    <polygon points="50,210 80,205 110,200 142,194 174,188 206,182 238,176 270,170 302,164 334,158 366,152 398,146 430,140 462,135 494,129 526,124 558,118 590,113 622,107 654,102 686,96 718,91 750,86 750,210" fill="url(#areaGrad)"/>
+
+    <!-- Line Curve -->
+    <polyline points="50,210 80,205 110,200 142,194 174,188 206,182 238,176 270,170 302,164 334,158 366,152 398,146 430,140 462,135 494,129 526,124 558,118 590,113 622,107 654,102 686,96 718,91 750,86" fill="none" stroke="url(#lineGrad)" stroke-width="3.5" stroke-linecap="round"/>
+
+    <!-- Data Markers -->
+    <circle cx="50" cy="210" r="4.5" fill="#34d399" stroke="#0b0e27" stroke-width="2"/>
+    <circle cx="270" cy="170" r="4.5" fill="#34d399" stroke="#0b0e27" stroke-width="2"/>
+    <circle cx="494" cy="129" r="4.5" fill="#34d399" stroke="#0b0e27" stroke-width="2"/>
+    <circle cx="750" cy="86" r="6" fill="#10b981" stroke="#f8fafc" stroke-width="2"/>
+
+    <!-- Callout Tag at end -->
+    <rect x="670" y="52" width="105" height="24" rx="6" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="1.2"/>
+    <text x="722" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#34d399">23 Lessons</text>
+
+    <!-- X Axis Labels -->
+    <text x="50" y="232" font-size="11" fill="#94a3b8">Task 1 (Cold)</text>
+    <text x="398" y="232" font-size="11" fill="#94a3b8">Task 12</text>
+    <text x="750" y="232" font-size="11" fill="#94a3b8" text-anchor="end">Task 23 (Compounded)</text>
+  </g>
+
+  <!-- Knowledge Transfer Callout Box -->
+  <rect x="40" y="278" width="780" height="42" rx="8" fill="#064e3b" fill-opacity="0.2" stroke="#065f46"/>
+  <text x="56" y="297" font-size="11.5" font-weight="700" fill="#34d399">Proven Cross-Category Transfers:</text>
+  <text x="56" y="312" font-size="11" fill="#a7f3d0">D4←D1 (design patterns), L4←L1 (deadlock prevention), X3←T3+X1, S3←T3 — later agents explicitly cited earlier lesson cards.</text>
+</svg>

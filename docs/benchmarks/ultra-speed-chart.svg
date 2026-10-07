@@ -1,24 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"><rect width="860" height="400" rx="16" fill="#0b0e27"/><text x="40" y="48" font-size="20" font-weight="800" fill="#f5f7fc">⚡ ULTRA Speed Mode — real benchmark (46-run study)</text><text x="40" y="74" font-size="13" fill="#9aa4c8">Agent wall-clock, baseline vs fable (ULTRA routed) · lower is better</text>
-  <text x="40" y="124" font-size="13" font-weight="700" fill="#f5f7fc">T4 · file reorganizer</text>
-  <rect x="170" y="106" width="520" height="20" rx="5" fill="#94a3b8" opacity="0.85"/>
-  <text x="694" y="118" font-size="12" fill="#9aa4c8">65s</text>
-  <rect x="170" y="138" width="256" height="20" rx="5" fill="#ffc93c"/>
-  <text x="430" y="142" font-size="12" fill="#f5f7fc">32s</text>
-  <text x="158" y="142" text-anchor="end" font-size="12.5" font-weight="700" fill="#34d399">-51%</text><text x="770" y="128" font-size="13" font-weight="800" fill="#34d399">⚡ 2× FASTER</text>
-  <text x="40" y="194" font-size="13" font-weight="700" fill="#f5f7fc">S1 · quick fix</text>
-  <rect x="170" y="176" width="120" height="20" rx="5" fill="#94a3b8" opacity="0.85"/>
-  <text x="294" y="188" font-size="12" fill="#9aa4c8">15s</text>
-  <rect x="170" y="208" width="144" height="20" rx="5" fill="#38e0ff"/>
-  <text x="318" y="212" font-size="12" fill="#f5f7fc">18s</text>
-  <text x="158" y="212" text-anchor="end" font-size="12.5" font-weight="700" fill="#f87171">+20%</text><text x="770" y="198" font-size="13" font-weight="800" fill="#f87171">slower</text>
-  <text x="40" y="264" font-size="13" font-weight="700" fill="#f5f7fc">S3 · fast answer</text>
-  <rect x="170" y="246" width="240" height="20" rx="5" fill="#94a3b8" opacity="0.85"/>
-  <text x="414" y="258" font-size="12" fill="#9aa4c8">30s</text>
-  <rect x="170" y="278" width="400" height="20" rx="5" fill="#38e0ff"/>
-  <text x="574" y="282" font-size="12" fill="#f5f7fc">50s</text>
-  <text x="158" y="282" text-anchor="end" font-size="12.5" font-weight="700" fill="#f87171">+67%</text><text x="770" y="268" font-size="13" font-weight="800" fill="#f87171">slower</text>
-  <rect x="40" y="312" width="780" height="60" rx="12" fill="#161b3a" stroke="#3c4678"/>
-  <text x="60" y="340" font-size="13" fill="#9aa4c8">The single biggest ULTRA win in the study — file reorganization completed in half the time.
-  S1/S3 were speed-of-thought tasks where reading the pack cost more than it saved — disclosed honestly.</text>
-  <text x="40" y="378" font-size="11" fill="#94a3b8">source: benchmark_per_task.csv · 46 isolated runs · deterministic grading · 2026-09-25</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 410" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="ultraGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="baseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="860" height="410" rx="16" fill="#0b0e27" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Header -->
+  <text x="40" y="46" font-size="20" font-weight="800" fill="#f8fafc">⚡ ULTRA Speed Mode — Real Empirical Benchmark (46-Run Study)</text>
+  <text x="40" y="72" font-size="13" fill="#94a3b8">Agent wall-clock latency: Baseline vs Fable (ULTRA routed) · Lower is better</text>
+
+  <!-- Legend -->
+  <g transform="translate(620, 32)">
+    <rect x="0" y="6" width="14" height="10" rx="3" fill="#64748b"/>
+    <text x="20" y="15" font-size="11" fill="#94a3b8">Baseline</text>
+    <rect x="90" y="6" width="14" height="10" rx="3" fill="url(#amberGrad)"/>
+    <text x="110" y="15" font-size="11" fill="#fbbf24">Fable ULTRA</text>
+  </g>
+
+  <!-- Row 1: T4 Complex File Reorganizer -->
+  <g transform="translate(0, 105)">
+    <text x="40" y="24" font-size="13" font-weight="700" fill="#f8fafc">T4 · Complex File Reorganizer</text>
+    <text x="40" y="42" font-size="11" fill="#64748b">Multi-directory refactor</text>
+    
+    <!-- Baseline Bar: 65s -->
+    <rect x="260" y="8" width="400" height="18" rx="6" fill="url(#baseGrad)" opacity="0.85"/>
+    <text x="670" y="22" font-size="12" font-weight="600" fill="#94a3b8">65s</text>
+
+    <!-- Fable ULTRA Bar: 32s -->
+    <rect x="260" y="32" width="197" height="18" rx="6" fill="url(#amberGrad)"/>
+    <text x="466" y="46" font-size="12" font-weight="700" fill="#fbbf24">32s</text>
+
+    <!-- Stat Callout -->
+    <rect x="700" y="14" width="120" height="30" rx="8" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-width="1.2"/>
+    <text x="760" y="33" text-anchor="middle" font-size="12" font-weight="800" fill="#34d399">⚡ 2× FASTER (-51%)</text>
+  </g>
+
+  <!-- Divider -->
+  <line x1="40" y1="185" x2="820" y2="185" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Row 2: S1 Quick Fix -->
+  <g transform="translate(0, 200)">
+    <text x="40" y="24" font-size="13" font-weight="700" fill="#f8fafc">S1 · Quick Regex Fix</text>
+    <text x="40" y="42" font-size="11" fill="#64748b">Single-line syntax edit</text>
+    
+    <!-- Baseline Bar: 15s -->
+    <rect x="260" y="8" width="92" height="18" rx="6" fill="url(#baseGrad)" opacity="0.85"/>
+    <text x="362" y="22" font-size="12" font-weight="600" fill="#94a3b8">15s</text>
+
+    <!-- Fable ULTRA Bar: 18s -->
+    <rect x="260" y="32" width="111" height="18" rx="6" fill="url(#ultraGrad)"/>
+    <text x="381" y="46" font-size="12" font-weight="700" fill="#38bdf8">18s</text>
+
+    <!-- Stat Callout -->
+    <rect x="700" y="14" width="120" height="30" rx="8" fill="#334155" fill-opacity="0.3" stroke="#475569" stroke-width="1"/>
+    <text x="760" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#cbd5e1">+20% (Par / Speed of thought)</text>
+  </g>
+
+  <!-- Divider -->
+  <line x1="40" y1="275" x2="820" y2="275" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Row 3: S3 Fast Answer -->
+  <g transform="translate(0, 290)">
+    <text x="40" y="24" font-size="13" font-weight="700" fill="#f8fafc">S3 · Instant Lookup Answer</text>
+    <text x="40" y="42" font-size="11" fill="#64748b">Pure conversational query</text>
+    
+    <!-- Baseline Bar: 30s -->
+    <rect x="260" y="8" width="185" height="18" rx="6" fill="url(#baseGrad)" opacity="0.85"/>
+    <text x="455" y="22" font-size="12" font-weight="600" fill="#94a3b8">30s</text>
+
+    <!-- Fable ULTRA Bar: 50s -->
+    <rect x="260" y="32" width="308" height="18" rx="6" fill="url(#ultraGrad)"/>
+    <text x="578" y="46" font-size="12" font-weight="700" fill="#38bdf8">50s</text>
+
+    <!-- Stat Callout -->
+    <rect x="700" y="14" width="120" height="30" rx="8" fill="#f43f5e" fill-opacity="0.12" stroke="#f43f5e" stroke-width="1"/>
+    <text x="760" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#fb7185">+67% (Pack Read Overhead)</text>
+  </g>
+
+  <!-- Footer Disclosure Card -->
+  <rect x="40" y="360" width="780" height="36" rx="8" fill="#161b3a" stroke="#252f5a"/>
+  <text x="56" y="382" font-size="11" fill="#94a3b8">Honest Empirical Takeaway: Reading research packs buys huge wins on complex tasks (T4: -51%), but adds reading overhead on trivial lookups (S1/S3). Fable routes accordingly.</text>
 </svg>

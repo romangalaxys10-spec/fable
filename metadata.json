@@ -1,0 +1,8 @@
+{
+  "name": "Fable ⚡ Agent Experience Studio",
+  "description": "Production-grade experience layer, multi-dataset retriever, dual-accelerator boost lab, and smart ledger war room for self-improving AI coding agents.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
