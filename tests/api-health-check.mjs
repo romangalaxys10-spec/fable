@@ -35,7 +35,37 @@ function isHonestRefusal(data) {
   return data !== null && typeof data === 'object' && (data.label === 'NOT_RUN' || data.status === 'NOT_RUN');
 }
 
+// Availability gate: this audit targets a LIVE server. When none is running
+// (CI job without the studio, isolated environment) the checks would all fail
+// with connection errors — false negatives that mask real regressions. Probe
+// first; skip honestly when the server is absent. Set FABLE_REQUIRE_SERVER=1
+// to turn the skip into a hard failure (for jobs that MUST have the server).
+async function serverUp(timeoutMs = 10_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(`${BASE_URL}/api/status`, { signal: AbortSignal.timeout(2_000) });
+      if (res.ok) return true;
+    } catch {
+      // not up yet — retry until the deadline
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  return false;
+}
+
 async function runApiAudit() {
+  if (!(await serverUp())) {
+    const message = `SKIPPED — no server reachable at ${BASE_URL} (start it with: npm run dev). Nothing was audited; no false failures are reported.`;
+    if (process.env.FABLE_REQUIRE_SERVER === '1') {
+      console.error(`api-health-check: ${message}`);
+      console.error('FABLE_REQUIRE_SERVER=1 is set — treating the missing server as a failure.');
+      process.exit(1);
+    }
+    console.warn(`api-health-check: ${message}`);
+    process.exit(0);
+  }
+
   const results = [];
   const failures = [];
 
