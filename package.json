@@ -9,8 +9,9 @@
     "start": "node server.ts",
     "lint": "tsc --noEmit",
     "qa": "tsx packages/cli/src/index.ts",
-    "test": "tsx --test packages/*/test/*.test.ts",
-    "test:xroutelm": "tsx --test packages/xroutelm/test/*.test.ts"
+    "test": "tsx --test packages/*/test/*.test.ts && tsx tests/qa-architect-mcp-args.ts && tsx tests/e2e-system-audit.ts",
+    "test:xroutelm": "tsx --test packages/xroutelm/test/*.test.ts",
+    "test:api": "node tests/api-health-check.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
