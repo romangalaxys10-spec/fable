@@ -2,6 +2,19 @@
 
 All notable changes to the Fable plugin and experience studio are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v2.2.1] — 2026-10-08 — Review Fixes (7-issue audit: 5 fixed, 2 already resolved)
+
+### Added
+- **Generator agent test coverage** (`packages/agents/test/generator-agent.test.ts`): 9 tests covering seed propagation (string verbatim, number type-preserved, undefined reported honestly), `tracesTo` bound to real input criteria, unique sequential ids, pyramid distribution computed from emitted cases, byte-identical suites for identical seeds, seed sensitivity, honest empty state, whitespace-only criteria filtering.
+- **MCP arguments validator** (`src/components/QAArchitectTab.tsx`): user-controlled JSON from the arguments textarea is validated before any `/api/qa/mcp` request — must be a plain object, no `__proto__`/`constructor`/`prototype` keys at any depth, ≤ 8 nesting levels, ≤ 64,000 chars; every rejection surfaces an honest error and issues no request. Covered by `tests/qa-architect-mcp-args.ts` (8 checks).
+
+### Fixed
+- **api-health-check.mjs was log-only** (`tests/api-health-check.mjs`): endpoints are now asserted against their contract (200+JSON for computed endpoints; honest 400 `NOT_RUN` refusal accepted for evidence-free POSTs; critical `/api/qa/doctor`, `/api/qa/risk`, `/api/qa/graph` strictly 200). Any failure — connection error, 500, non-JSON, fabricated-looking payload — exits 1. Server down previously exited 0; now: skip honestly (exit 0 with a loud notice), or exit 1 under `FABLE_REQUIRE_SERVER=1`.
+
+### Verified not present (no change)
+- The reported TC-7/TC-8 hardcoded test defects (`currentState === 'PENDING'`, `tokenExpiry = Date.now() - 360000`) existed only in the c87598b snapshot and were removed by 51e9b8f's honesty overhaul; current main generates time-boundary tests from an explicit fixed clock (`new Date('2026-01-01T00:00:00Z')`), so they are deterministic by construction.
+- The reported seed type "mismatch" is not real: `seed?: string | number` and `seed: string | number | undefined` are the same type; no consumer assumes a non-undefined seed and golden rule 12 explicitly judges an absent seed.
+
 ## [v2.2.0] — 2026-10-08 — Honesty Overhaul & xRouteLM
 
 ### Fixed (fabrication removal — every result is now real or explicitly NOT_RUN)
