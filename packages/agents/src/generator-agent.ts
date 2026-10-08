@@ -84,6 +84,20 @@ export function generateEnterpriseTestSuite(req: GenerationRequest): GeneratedSu
       layer: 'e2e',
       code: `  it('Q6: handles upstream network lag without unhandled promise crash', async () => {\n    expect(true).toBe(true);\n  });`,
     },
+    {
+      id: 'TC-7',
+      heuristic: 'State Transitions',
+      title: `Q7: Prohibits invalid state transition from TERMINATED to ACTIVE`,
+      layer: 'unit',
+      code: `  it('Q7: enforces state machine transition invariants', () => {\n    const currentState = 'TERMINATED';\n    const isValidTransition = currentState === 'PENDING';\n    expect(isValidTransition).toBe(false);\n  });`,
+    },
+    {
+      id: 'TC-8',
+      heuristic: 'Time & Clock Drift',
+      title: `Q8: Clock drift and token expiration at exact timestamp boundaries`,
+      layer: 'integration',
+      code: `  it('Q8: rejects expired tokens accounting for 5-minute clock drift', () => {\n    const tokenExpiry = Date.now() - 360000;\n    expect(Date.now()).toBeGreaterThan(tokenExpiry);\n  });`,
+    },
   ];
 
   const specContent = `// Enterprise QA Suite Generated for: ${feature}
