@@ -38,6 +38,51 @@ import {
   HealProposal
 } from '../types';
 
+// ---------------------------------------------------------------------------
+// MCP tool-argument validation (client-side gate before /api/qa/mcp).
+//
+// The arguments textarea is user-controlled free-form JSON. Before the parsed
+// value is forwarded to an MCP tool it is validated: it must be a plain
+// JSON object (never null/array/primitive), must not carry prototype-
+// polluting keys, and must stay within bounded depth and size so a malformed
+// payload cannot reach tool implementations or crash the studio tab.
+// The server remains the authoritative boundary; this gate keeps obviously
+// hostile or malformed arguments out of the request entirely.
+// ---------------------------------------------------------------------------
+
+const MCP_ARGS_MAX_CHARS = 64_000;
+const MCP_ARGS_MAX_DEPTH = 8;
+const FORBIDDEN_ARG_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+interface McpArgsValidation {
+  ok: boolean;
+  error?: string;
+}
+
+export function validateMcpArgs(raw: unknown): McpArgsValidation {
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+    const got = raw === null ? 'null' : Array.isArray(raw) ? 'array' : typeof raw;
+    return { ok: false, error: `MCP tool arguments must be a JSON object like {"task": "..."} — got ${got}` };
+  }
+  const walk = (value: unknown, depth: number, path: string): string | null => {
+    if (depth > MCP_ARGS_MAX_DEPTH) {
+      return `arguments nesting exceeds ${MCP_ARGS_MAX_DEPTH} levels at ${path}`;
+    }
+    if (value !== null && typeof value === 'object') {
+      for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+        if (FORBIDDEN_ARG_KEYS.has(key)) {
+          return `forbidden key "${key}" at ${path}.${key}`;
+        }
+        const problem = walk(child, depth + 1, `${path}.${key}`);
+        if (problem !== null) return problem;
+      }
+    }
+    return null;
+  };
+  const problem = walk(raw, 0, 'arguments');
+  return problem !== null ? { ok: false, error: problem } : { ok: true };
+}
+
 export const QAArchitectTab: React.FC = () => {
   const [activeSubView, setActiveSubView] = useState<'workbench' | 'planner' | 'catalog' | 'golden_rules' | 'graph'>('workbench');
   
@@ -154,11 +199,22 @@ export const QAArchitectTab: React.FC = () => {
   const handleCallMcpTool = async () => {
     setMcpLoading(true);
     try {
-      let parsedArgs = {};
+      if (mcpInputJson.length > MCP_ARGS_MAX_CHARS) {
+        setMcpOutput({ error: `MCP tool arguments exceed the ${MCP_ARGS_MAX_CHARS}-character limit (${mcpInputJson.length} given) — shrink the payload.` });
+        setMcpLoading(false);
+        return;
+      }
+      let parsedArgs: unknown;
       try {
         parsedArgs = JSON.parse(mcpInputJson);
       } catch (parseErr) {
         setMcpOutput({ error: 'Invalid JSON payload in arguments field' });
+        setMcpLoading(false);
+        return;
+      }
+      const validation = validateMcpArgs(parsedArgs);
+      if (!validation.ok) {
+        setMcpOutput({ error: `MCP tool arguments rejected: ${validation.error ?? 'invalid arguments'}` });
         setMcpLoading(false);
         return;
       }
