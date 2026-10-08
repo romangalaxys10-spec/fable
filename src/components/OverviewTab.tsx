@@ -61,12 +61,77 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ status, onNavigate, on
               Launch Task Router
             </button>
             <button
+              onClick={() => onNavigate('qa')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              Explore qaforge QA OS
+            </button>
+            <button
               onClick={() => onNavigate('benchmarks')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold border border-slate-700 transition"
             >
               <Gauge className="w-4 h-4 text-amber-400" />
               View 46-Run Study Benchmarks
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Immersive Graphics Feature Visualizer */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. Speed & Token Efficiency */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-cyan-950/30 to-slate-900 border border-slate-800 p-5 group hover:border-cyan-500/50 transition">
+          <div className="absolute top-0 right-0 p-3 text-cyan-400/20 group-hover:text-cyan-400/40 transition">
+            <Zap className="w-12 h-12" />
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-1">Token Economy v3.3.0</div>
+          <div className="text-2xl font-black text-white mb-1">8x / 87.5%</div>
+          <p className="text-xs text-slate-300 mb-3">Context footprint slashed from ~280k to ~35k tokens via AST-first reads & DTOC compression.</p>
+          <div className="w-full bg-slate-950 rounded-full h-2 border border-slate-800 overflow-hidden">
+            <div className="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full w-[87.5%]"></div>
+          </div>
+        </div>
+
+        {/* 2. QA Operating System */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950/30 to-slate-900 border border-slate-800 p-5 group hover:border-indigo-500/50 transition">
+          <div className="absolute top-0 right-0 p-3 text-indigo-400/20 group-hover:text-indigo-400/40 transition">
+            <ShieldCheck className="w-12 h-12" />
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-1">qaforge OS v2.0</div>
+          <div className="text-2xl font-black text-white mb-1">15 Invariants</div>
+          <p className="text-xs text-slate-300 mb-3">Zero arbitrary sleeps, 12-category triage, 8-factor risk analysis, and 3-tier self-healing.</p>
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>100/100 Doctor Audit</span>
+          </div>
+        </div>
+
+        {/* 3. Anti-Slop Human Craft */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 border border-slate-800 p-5 group hover:border-emerald-500/50 transition">
+          <div className="absolute top-0 right-0 p-3 text-emerald-400/20 group-hover:text-emerald-400/40 transition">
+            <Sparkles className="w-12 h-12" />
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">Stop-Slop Engine</div>
+          <div className="text-2xl font-black text-white mb-1">50-Pt Rubric</div>
+          <p className="text-xs text-slate-300 mb-3">Eliminates AI writing tells, throat-clearing openers ("In today's..."), and formulaic structures.</p>
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>Zero AI Tells Enforced</span>
+          </div>
+        </div>
+
+        {/* 4. Autonomous Pentest & Reverify */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-rose-950/30 to-slate-900 border border-slate-800 p-5 group hover:border-rose-500/50 transition">
+          <div className="absolute top-0 right-0 p-3 text-rose-400/20 group-hover:text-rose-400/40 transition">
+            <Flame className="w-12 h-12" />
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-rose-400 mb-1">Strix & Reverify</div>
+          <div className="text-2xl font-black text-white mb-1">Zero Hallucinations</div>
+          <p className="text-xs text-slate-300 mb-3">Deterministic ground truth checks & OWASP Top 10 sandboxed exploit PoC verification.</p>
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-400">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>100% True Positive Rate</span>
           </div>
         </div>
       </div>
