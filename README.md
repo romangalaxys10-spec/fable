@@ -6,6 +6,20 @@
 [![Token Efficiency: v3.3.0](https://img.shields.io/badge/Token%20Efficiency-v3.3.0%20(8x%20Savings)-cyan.svg)](#universal-token-efficiency-protocol-v330)
 [![Platform: macOS · Linux · Windows](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-purple.svg)](#platform-matrix)
 [![Hugging Face: Datasets API](https://img.shields.io/badge/HF%20Datasets-5+%20Curated%20Traces-yellow.svg)](https://huggingface.co)
+[![Zero API Keys](https://img.shields.io/badge/Core%20Loop-Zero%20API%20Keys-success.svg)](#zero-config-token--key-bypass-engine)
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Skills-28%20Agent%20Skills-informational?style=flat-square&logo=gitbook&logoColor=white" alt="28 Agent Skills">
+  <img src="https://img.shields.io/badge/CLI-21%20Commands-orange?style=flat-square&logo=gnu-bash&logoColor=white" alt="21 Commands">
+  <img src="https://img.shields.io/badge/MCP-11%20Tools-blueviolet?style=flat-square&logo=json&logoColor=white" alt="11 MCP Tools">
+  <img src="https://img.shields.io/badge/Reverify-Ground%20Truth-critical?style=flat-square&logo=shield&logoColor=white" alt="Reverify">
+  <img src="https://img.shields.io/badge/Stop%20Slop-50Pt%20Craft-success?style=flat-square&logo=openai&logoColor=white" alt="Stop Slop">
+  <img src="https://img.shields.io/badge/Strix-Autonomous%20DAST-red?style=flat-square&logo=security&logoColor=white" alt="Strix DAST">
+  <img src="https://img.shields.io/badge/Cloudflare-6--Phase%20Audit-informational?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Security Audit">
+  <img src="https://img.shields.io/badge/Traceability-Matrix%20Generator-yellowgreen?style=flat-square&logo=table&logoColor=white" alt="Traceability Matrix">
+  <img src="https://img.shields.io/badge/Risk-8--Factor%20Engine-yellow?style=flat-square&logo=calculator&logoColor=white" alt="8-Factor Risk">
+  <img src="https://img.shields.io/badge/Healing-3--Tier%20Recovery-blue?style=flat-square&logo=band-aid&logoColor=white" alt="Self-Healing">
+</p>
 
 > **Mission**: Turn AI coding agents (Claude Code, Cursor, Windsurf, Cline, Codex, Copilot, Gemini CLI, Zed) from passive script generators into an **autonomous, evidence-driven, elite QA organization**.
 >
