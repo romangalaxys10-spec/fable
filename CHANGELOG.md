@@ -2,6 +2,27 @@
 
 All notable changes to the Fable plugin and experience studio are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v2.2.0] — 2026-10-08 — Honesty Overhaul & xRouteLM
+
+### Fixed (fabrication removal — every result is now real or explicitly NOT_RUN)
+- **Impact analysis (`packages/core/src/impact.ts`)**: diff stats now come from real `git diff --numstat`; symbols come from a real AST walk; every reported path is verified on disk (`existsOnDisk`); refuses non-git directories instead of inventing a diff.
+- **Doctor (`packages/cli/src/doctor.ts`)**: all checks are live probes (spawnSync version probes, socket probes, real secret scan, real temp-write verification). healthScore is computed from outcomes — it varies (95 in CI-like envs) instead of the previous constant 100.
+- **Zero-config (`packages/core/src/zero-config.ts`)**: missing credentials now produce `NOT_RUN / REQUIRES_CREDENTIALS` — never fabricated data. Simulation exists only when explicitly requested and is watermarked `simulated: true` with label `NOT_RUN`.
+- **MCP server (`packages/mcp-server/src/tools.ts`)**: `run_tests` no longer reports phantom passes; quality reports require actual run evidence and otherwise return an explicit refusal.
+- **DAST (`packages/strix/src/dast-scanner.ts`)**: the fake scan (`simulatedVulnerable = false`) is replaced by real request/response evidence collection; unreachable targets yield ERROR, never a clean bill.
+- **Self-healing (`packages/healing/src/healer.ts`)**: a patch is `applied` only after a passing re-run through the caller-supplied `rerun` callback; absent callback → stays `proposed`; failing rerun → demoted; `REAL_REGRESSION` blocks healing outright. Also fixed: heal payloads now carry the deterministic `seed` required by golden rule 12 (previously every heal was held by the rules engine).
+- **Golden rules (`packages/core/src/golden-rules.ts`)**: all 15 rules execute real checks — no `() => ({ pass: true })` stubs remain.
+- **Doctor FS-WRITE probe**: fixed off-by-one (`size === 4` vs 5-byte payload) that made a successful write report FAIL.
+
+### Added
+- **xRouteLM (`packages/xroutelm/` + `skills/xroutelm/`)** — the portable System One decision engine: Jev-compatible question semantics (`noul` / `choice` / `score`) answered by a zero-dependency IDF-weighted lexical scorer, with a feature-detected Laya (MLX) bridge for Apple Silicon. Where Laya cannot run, xRouteLM routes, gates, and triages — honestly labeled `INFERRED`, evidence attached, fallback chain recorded.
+  - CLI: `qa xroute "<task>"`; Server: `POST /api/xroutelm/route`, `POST /api/xroutelm/decide`.
+  - Learning loop: `RouteStats` JSONL window (50) promotes ≥70% success, demotes <30%.
+  - Harness mode: `SystemOneHarness.gate()` blocks agent loops below noul threshold; `routeModel()` picks models with confidence-based fallback.
+- **Test suite (`packages/*/test/`)**: 28 tests via `node:test` + tsx — real-git numstat assertions (temp repo with exact +3/−1), honest gate semantics, heal-then-verify tier governance, doctor probe integrity, xRouteLM scorer/registry/journal/learning/harness.
+- **CI (`.github/workflows/ci.yml`)**: typecheck + tests + anti-fabrication audit job (greps executable code for the removed fake-result patterns).
+- **`.gitignore`**: node_modules, runtime journals, env files.
+
 ## [v2.1.0] — 2026-10-07 — Ground Truth Verification, Anti-Slop, Autonomous DAST & Cloudflare Security Audit
 
 ### Added

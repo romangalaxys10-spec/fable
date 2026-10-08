@@ -21,6 +21,10 @@ export interface AuditFinding {
 export interface SecurityAuditSummary {
   auditTarget: string;
   overallPostureScore: number; // 0 - 100
+  /** Epistemics label: OBSERVED when computed from real probes. */
+  label?: 'OBSERVED' | 'NOT_RUN';
+  status?: 'OK' | 'ERROR';
+  detail?: string;
   phasesCompleted: { phase: AuditPhase; status: 'COMPLETED' | 'SKIPPED'; findingsCount: number }[];
   totalFindings: number;
   criticalCount: number;

@@ -8,7 +8,9 @@
     "build": "vite build",
     "start": "node server.ts",
     "lint": "tsc --noEmit",
-    "qa": "tsx packages/cli/src/index.ts"
+    "qa": "tsx packages/cli/src/index.ts",
+    "test": "tsx --test packages/*/test/*.test.ts",
+    "test:xroutelm": "tsx --test packages/xroutelm/test/*.test.ts"
   },
   "dependencies": {
     "express": "^4.21.2",

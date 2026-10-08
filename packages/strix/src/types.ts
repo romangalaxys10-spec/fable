@@ -22,12 +22,17 @@ export interface ExploitPayload {
 export interface ConfirmedVulnerability {
   id: string;
   title: string;
-  category: OwaspCategory;
+  category: OwaspCategory | 'SECURITY_MISCONFIGURATION' | 'INFORMATION_DISCLOSURE';
   cwe: string;
   cvss: number; // e.g. 8.6
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   endpoint: string;
-  proofOfConcept: {
+  /** Passive evidence observed from real requests (the active-exploit PoC shape is retained for authorized runs). */
+  evidence: {
+    request: string;
+    observedResponse: string;
+  };
+  proofOfConcept?: {
     command: string;
     payload: string;
     observedResponse: string;
@@ -44,4 +49,12 @@ export interface PentestScanReport {
   rejectedFalsePositivesCount: number;
   overallRiskLevel: 'SAFE' | 'VULNERABLE' | 'CRITICAL';
   scanDurationMs: number;
+  /** Epistemics: ERROR reports a reachable-failure; findings are OBSERVED. */
+  status?: 'OK' | 'ERROR';
+  label?: 'OBSERVED' | 'NOT_RUN';
+  detail?: string;
+  /** Passive probes executed with their evidence (no destructive payloads). */
+  probes?: Array<{ request: string; observation: string; finding: boolean }>;
+  /** The active exploitation payloads this scanner DECLINES to fire without explicit operator authorization. */
+  declaredActiveProbes?: ExploitPayload[];
 }

@@ -64,10 +64,10 @@ export const QAContextModelSchema = z.object({
     status: z.enum(['open', 'in_progress', 'verified_fixed']),
   })).default([]),
   environments: z.array(z.string()).default(['local', 'ci']),
-  dependencies: z.record(z.string()).default({}),
+  dependencies: z.record(z.string(), z.string()).default({}),
   testData: z.object({
     factories: z.array(z.string()).default([]),
-    deterministicSeeds: z.record(z.string()).default({}),
+    deterministicSeeds: z.record(z.string(), z.string()).default({}),
     cleanupRegistered: z.boolean().default(true),
   }).default({
     factories: [],

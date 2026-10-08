@@ -10,6 +10,7 @@ import { calculateRisk } from './packages/core/src/risk';
 import { analyzeImpact } from './packages/core/src/impact';
 import { clusterFailures } from './packages/agents/src/triage-agent';
 import { evaluateHealing } from './packages/healing/src/healer';
+import { DecisionEngine, ScorerRegistry, fableRouteTargets, RouteStats } from './packages/xroutelm/src/index';
 import { generateEnterpriseTestSuite } from './packages/agents/src/generator-agent';
 import { buildStandardQualityGraph } from './packages/graph/src/quality-graph';
 import { QualityGovernanceAgent } from './packages/agents/src/governance-agent';
@@ -127,24 +128,35 @@ app.get('/api/status', async (req, res) => {
     corpusCount = 0;
   }
 
+  // Engine statuses are OBSERVED (real probes), not static marketing copy.
+  const layaPresent = fs.existsSync(path.join(__dirname, 'vendor', 'laya', 'laya_mcp_server.py'));
+  const remotionPresent = fs.existsSync(path.join(__dirname, 'vendor', 'remotion-starter'));
+  const vimaxPresent = fs.existsSync(path.join(__dirname, 'vendor', 'vimax'));
+  const corpusDirReal = fs.existsSync(path.join(__dirname, '.fable'));
+
   res.json({
     ok: true,
     platform: process.platform,
     arch: process.arch,
     nodeVersion: process.version,
+    label: 'OBSERVED',
     engines: {
-      retrieval: { status: 'ready', type: 'Node.js HF Datasets API', latency: '~150ms' },
-      corpus: { status: 'ready', count: corpusCount, path: CORPUS_PATH },
+      retrieval: { status: 'ready', type: 'Node.js HF Datasets API', note: 'latency varies with network; no static number claimed' },
+      corpus: { status: 'ready', count: corpusCount, path: CORPUS_PATH, onDisk: corpusCount > 0 },
       laya: {
-        status: isMac ? 'available' : 'fallback-skipped',
-        note: isMac ? 'MLX On-Device Active' : 'Non-Mac platform: Auto-skips to Headroom/Lexical boost (Zero overhead)',
-        hardware: isMac ? 'Apple Silicon' : 'Linux/x64 Host'
+        status: isMac && layaPresent ? 'available' : layaPresent ? 'runtime-present-but-platform-unsupported' : 'unavailable',
+        note: isMac
+          ? (layaPresent ? 'MLX runtime detected in vendor/laya' : 'Apple Silicon detected but vendor/laya runtime not found')
+          : 'non-macOS platform: routing falls back to the portable xRouteLM heuristic scorer',
+        hardware: isMac ? 'Apple Silicon' : `${process.platform}/${process.arch}`,
+        bridge: 'packages/xroutelm (laya-bridge scorer, feature-detected)'
       },
-      headroom: { status: 'ready', engine: 'light-dedupe + kompress fallback', compression: '~42% token reduction' },
-      smartScaffold: { status: 'ready', loop: 'GVS5H Multi-Agent Ledger', dir: '.smart/' },
-      vimax: { status: 'ready', type: 'ViMax + Remotion + AI4Animation Studio' },
+      headroom: { status: 'ready', engine: 'light-dedupe + kompress fallback', compression: '~42% token reduction (documented estimate; measure via /api/token-efficiency/compress)' },
+      smartScaffold: { status: 'ready', loop: 'GVS5H Multi-Agent Ledger', dir: '.smart/', onDisk: fs.existsSync(path.join(__dirname, '.smart')) },
+      vimax: { status: vimaxPresent ? 'ready (vendored)' : 'not vendored in this checkout', type: 'ViMax + Remotion + AI4Animation Studio' },
       qaArchitect: { status: 'ready', catalog: 'QASkills.sh (Pramod Dutta)', engine: '4-Quadrant Decomposition & Auto-Waiting', skills: 7 },
-      securityGate: { status: 'ready', policy: 'P0-P3 Audit Active' }
+      securityGate: { status: 'ready', policy: 'P0-P3 Audit Active (audit.py verdicts passed through verbatim)' },
+      xroutelm: { status: 'ready', type: 'System One decision engine (heuristic + laya bridge)', label: 'INFERRED' }
     },
     datasets: [
       { id: 'armand0e/claude-fable-5-claude-code', traces: 63, type: 'Claude Code Raw Sessions' },
@@ -369,27 +381,28 @@ app.post('/api/boost', async (req, res) => {
   const { task, simulateTokens = 12500 } = req.body;
   if (!task) return res.status(400).json({ error: 'Task is required' });
 
-  // Calculate real or simulated boost statistics
+  // HONESTY: no fake pipeline durations, no invented Laya candidate counts,
+  // no made-up dollar figures. What remains is real arithmetic on the input
+  // token estimate, labeled as an ESTIMATE.
   const inputTokens = Number(simulateTokens) || 12500;
-  const headroomSavings = 0.44; // ~44% compression
+  const headroomSavings = 0.44; // documented ~44% compression ratio (estimate)
   const compressedTokens = Math.round(inputTokens * (1 - headroomSavings));
-  const layaCandidates = 8;
-  const layaApproved = 3;
 
   res.json({
     task,
+    label: 'INFERRED',
+    estimated: true,
+    detail: 'figures are arithmetic estimates from the documented ~44% compression ratio — no pipeline executed, no durations or dataset counts invented',
     pipeline: [
-      { stage: '1. Multi-Dataset Retrieval', duration_ms: 182, status: 'complete', candidates: layaCandidates },
-      { stage: '2. Laya On-Device Triage', duration_ms: 38, status: 'complete', approved: layaApproved, rejected: 5, model: 'laya-mlx (Apple Silicon / Fast Lexical)' },
-      { stage: '3. Headroom Context Compression', duration_ms: 29, status: 'complete', engine: 'headroom-kompress + light-dedupe' }
+      { stage: '1. Multi-Dataset Retrieval', status: 'estimated', note: 'measured only when executed via /api/retrieve' },
+      { stage: '2. Laya On-Device Triage', status: process.platform === 'darwin' ? 'estimated (apple silicon present)' : 'estimated (laya unavailable on this platform)' },
+      { stage: '3. Headroom Context Compression', status: 'estimated', engine: 'headroom-kompress + light-dedupe' }
     ],
     token_economy: {
-      initial_tokens: inputTokens,
-      compressed_tokens: compressedTokens,
-      tokens_saved: inputTokens - compressedTokens,
-      compression_ratio: `${Math.round(headroomSavings * 100)}%`,
-      estimated_speedup: '1.9x',
-      token_cost_reduction: '$0.048 / query'
+      initial_tokens_estimated: inputTokens,
+      compressed_tokens_estimated: compressedTokens,
+      tokens_saved_estimated: inputTokens - compressedTokens,
+      compression_ratio_estimate: `${Math.round(headroomSavings * 100)}%`
     }
   });
 });
@@ -401,14 +414,28 @@ app.post('/api/smart/scaffold', (req, res) => {
 
   const slug = task.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
   const ledgerPath = `.smart/${slug}/`;
+  const taskMd = `# Mission Brief: ${task}\n\n## Acceptance Criteria:\n${criteria.map((c: string, i: number) => `${i + 1}. [ ] ${c}`).join('\n')}\n\n## Constraints:\n- Zero regressions\n- Hard verification before completion claim`;
+  const notesMd = `# Intel & Scouting: ${task}\n\n- (empty by design: record scouting notes as you discover them — no synthetic provenance scores)`;
+
+  // The old handler returned template JSON but never created the war room.
+  try {
+    const dir = path.join(__dirname, '.smart', slug);
+    fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(path.join(dir, 'task.md'))) fs.writeFileSync(path.join(dir, 'task.md'), taskMd, 'utf8');
+    if (!fs.existsSync(path.join(dir, 'notes.md'))) fs.writeFileSync(path.join(dir, 'notes.md'), notesMd, 'utf8');
+  } catch (err: any) {
+    res.status(500).json({ ok: false, error: `failed to create war room on disk: ${err.message}` });
+    return;
+  }
 
   res.json({
     ok: true,
+    createdOnDisk: true,
     war_room: {
       slug,
       path: ledgerPath,
-      task_md: `# Mission Brief: ${task}\n\n## Acceptance Criteria:\n${criteria.map((c: string, i: number) => `${i + 1}. [ ] ${c}`).join('\n')}\n\n## Constraints:\n- Zero regressions\n- Hard verification before completion claim`,
-      notes_md: `# Intel & Scouting: ${task}\n\n- Seeded from Fable multi-dataset traces (score: 0.92)\n- Avoided known trap: unbuffered IPC backpressure\n- Recommended approach: Invariant-based state machine`,
+      task_md: taskMd,
+      notes_md: notesMd,
       gvs5h_stages: [
         { id: 1, name: 'Plan & Scope', status: 'ready', description: 'Analyze constraints, invariants, and edge cases' },
         { id: 2, name: 'Ideate (3 Approaches)', status: 'ready', description: 'Approach A (Minimal), Approach B (Robust), Approach C (Zero-allocation)' },
@@ -423,49 +450,64 @@ app.post('/api/smart/scaffold', (req, res) => {
 // 7. Security Audit Gate
 app.post('/api/harness/audit', async (req, res) => {
   const { targetPath = '.' } = req.body;
+  // HONESTY: the audit.py subprocess returns a real verdict (ok |
+  // needs-review | blocked) — the wrapper used to throw it away and always
+  // report 'pass' (even fabricating a 100-score check list on errors). The
+  // subprocess verdict now passes through untouched.
   try {
     const auditScript = path.join(__dirname, 'scripts', 'harness', 'audit.py');
-    const { stdout } = await execFileAsync('python3', [auditScript, '--target', targetPath], { timeout: 10000 });
-    res.json({ raw: stdout, status: 'pass' });
-  } catch (err: any) {
-    // Provide standard security audit report if subprocess returns policy notes
+    const { stdout } = await execFileAsync('python3', [auditScript, '--target', targetPath], { timeout: 30000 });
+    let parsed: any = null;
+    try { parsed = JSON.parse(stdout); } catch { parsed = null; }
+    const verdict = parsed?.verdict ?? 'unknown';
     res.json({
-      status: 'pass',
-      score: 100,
-      checks: [
-        { category: 'P0 Policy', status: 'pass', detail: 'No banned binaries, package scripts, or unauthorized network endpoints' },
-        { category: 'P1 Secrets Scan', status: 'pass', detail: 'Zero hardcoded private keys or tokens detected in codebase' },
-        { category: 'P2 Dangerous APIs', status: 'pass', detail: 'Child process execution strictly sanitized, no eval or shell injection vectors' },
-        { category: 'P3 Quarantine Integrity', status: 'pass', detail: 'All vendored packages match trusted sha256 signatures' }
-      ]
+      raw: stdout.slice(0, 8000),
+      status: verdict === 'ok' ? 'pass' : verdict,
+      label: 'OBSERVED',
+      detail: `audit.py verdict: ${verdict} — surfaced verbatim, never rewritten to pass`
+    });
+  } catch (err: any) {
+    const stdout = typeof err?.stdout === 'string' ? err.stdout : '';
+    let parsed: any = null;
+    try { parsed = JSON.parse(stdout); } catch { parsed = null; }
+    const verdict = parsed?.verdict ?? 'error';
+    res.status(200).json({
+      status: verdict,
+      label: verdict === 'ok' ? 'OBSERVED' : 'NOT_VERIFIED',
+      error: err.message,
+      detail: `audit subprocess failed or returned a non-ok verdict (${verdict}) — surfaced, never masked as pass/100`
     });
   }
 });
 
-// 8. Empirical Benchmark Stats
+// 8. Measured Benchmark Stats — READ FROM REAL RESULT FILES
 app.get('/api/benchmarks', (req, res) => {
-  res.json({
-    title: '46-Run Empirical Study: Fable vs Standard Agent Baseline',
-    date: '2026-09-25',
-    headline_win: 'T4 File Reorganizer completed 2x faster (32s vs 65s, -51% wall clock)',
-    metrics: [
-      { id: 'T4', task: 'Complex File Reorganizer', baseline_s: 65, fable_s: 32, delta: '-51%', outcome: '2x FASTER' },
-      { id: 'S1', task: 'Quick Typo & Syntax Fix', baseline_s: 15, fable_s: 18, delta: '+20%', outcome: 'Par / Speed of thought' },
-      { id: 'S3', task: 'Instant Code Lookup', baseline_s: 30, fable_s: 50, delta: '+67%', outcome: 'Pack read cost (disclosed)' },
-      { id: 'D4', task: 'Architecture Refactoring', baseline_s: 142, fable_s: 78, delta: '-45%', outcome: '1.8x FASTER' },
-      { id: 'L4', task: 'Concurrent Buffer Deadlock', baseline_s: 195, fable_s: 84, delta: '-57%', outcome: '2.3x FASTER' }
-    ],
-    token_economy: {
-      prompt_context: { baseline: 13815, fable: 17286, delta: '+25%' },
-      final_output: { baseline: 166, fable: 255, delta: '+54%' },
-      ultra_savings: 'ULTRA speed mode strips citations and mode preambles on speed tasks'
-    },
-    routing_distribution: {
-      ultra: 38,
-      boost: 52,
-      smart: 10
+  // HONESTY: the "46-run study" previously served hardcoded numbers that
+  // contradicted the README. This endpoint now returns only what the
+  // committed fixture gauntlet (benchmarks/agentic-qa/) actually measured.
+  try {
+    const resultsPath = path.join(__dirname, 'benchmarks', 'agentic-qa', 'results.json');
+    const routingPath = path.join(__dirname, 'benchmarks', 'agentic-qa', 'results-routing.json');
+    const fixtureResults = fs.existsSync(resultsPath) ? JSON.parse(fs.readFileSync(resultsPath, 'utf8')) : null;
+    const routingResults = fs.existsSync(routingPath) ? JSON.parse(fs.readFileSync(routingPath, 'utf8')) : null;
+    if (fixtureResults === null && routingResults === null) {
+      res.status(503).json({
+        status: 'NOT_RUN',
+        label: 'NOT_RUN',
+        detail: 'no committed benchmark results found — run `npm run gauntlet` to measure the fixture corpus. No historical study is fabricated.'
+      });
+      return;
     }
-  });
+    res.json({
+      status: 'OK',
+      label: 'OBSERVED',
+      fixture_gauntlet: fixtureResults,
+      xroutelm_routing: routingResults,
+      provenance: 'numbers come from benchmarks/agentic-qa/results*.json, generated by benchmarks/agentic-qa/run.ts and run-routing.ts against committed fixtures'
+    });
+  } catch (err: any) {
+    res.status(500).json({ status: 'ERROR', label: 'NOT_VERIFIED', error: err.message });
+  }
 });
 
 // 9. QA Skills & QA-Architect Strategy Planner (QASkills.sh)
@@ -502,45 +544,64 @@ app.post('/api/qa/risk', (req, res) => {
   res.json(calculateRisk(factors || {}, task || ''));
 });
 
-app.post('/api/qa/impact', (req, res) => {
-  const { files, commitRange } = req.body;
-  res.json(analyzeImpact(files || ['src/services/payment.ts', 'src/components/CheckoutModal.tsx', 'src/server.ts'], commitRange || 'HEAD~1..HEAD'));
+app.post('/api/qa/impact', async (req, res) => {
+  const { files, commitRange, repoRoot } = req.body || {};
+  // REAL analysis against an actual git repository — no default fake file list.
+  const { analyzeImpactRepo } = await import('./packages/core/src/impact');
+  const root = typeof repoRoot === 'string' && repoRoot.length > 0 ? repoRoot : process.cwd();
+  try {
+    if (Array.isArray(files) && files.length > 0) {
+      res.json(analyzeImpact(files, commitRange || 'HEAD~1..HEAD', root));
+    } else {
+      res.json(await analyzeImpactRepo({ repoRoot: root, commitRange: commitRange || 'HEAD~1..HEAD' }));
+    }
+  } catch (err: any) {
+    res.status(400).json({ status: 'ERROR', label: 'NOT_RUN', error: err.message, detail: 'impact analysis requires a real git repository — no diff is ever fabricated' });
+  }
 });
 
 app.post('/api/qa/triage', (req, res) => {
-  const { failures } = req.body;
-  res.json(clusterFailures(failures || [
-    {
-      testId: 'tests/e2e/checkout.spec.ts',
-      errorMessage: 'Timeout 30000ms exceeded waiting for locator button.btn-pay',
-      firstAttemptFailed: true,
-      retryPassed: false,
-      domElementFound: false,
-    },
-    {
-      testId: 'tests/unit/pricing.test.ts',
-      errorMessage: 'Expected total 120.00 but received 100.00 (tax omitted)',
-      firstAttemptFailed: true,
-      retryPassed: false,
-    },
-    {
-      testId: 'tests/integration/auth.test.ts',
-      errorMessage: 'Socket hangup',
-      firstAttemptFailed: true,
-      retryPassed: true,
-    }
-  ]));
+  const { failures } = req.body || {};
+  if (!Array.isArray(failures) || failures.length === 0) {
+    res.status(400).json({
+      status: 'NOT_RUN',
+      label: 'NOT_RUN',
+      detail: 'no failure records supplied — triage computes from real failures. Post { failures: [{ testId, errorMessage, firstAttemptFailed, retryPassed }] }; no canned demo dataset is substituted.'
+    });
+    return;
+  }
+  res.json(clusterFailures(failures));
 });
 
-app.post('/api/qa/heal', (req, res) => {
-  const { testFile, testName, originalSnippet, failedLocatorOrSelector, updatedDomOrSchema, failureCategory } = req.body;
-  res.json(evaluateHealing({
-    testFile: testFile || 'tests/e2e/checkout.spec.ts',
-    testName: testName || 'User checkout flow',
-    originalSnippet: originalSnippet || "await page.locator('.btn-pay-now').click();",
-    failedLocatorOrSelector: failedLocatorOrSelector || "page.locator('.btn-pay-now')",
-    updatedDomOrSchema: updatedDomOrSchema || "<button role='button' name='Submit'>Submit</button>",
+
+app.post('/api/qa/heal', async (req, res) => {
+  const { testFile, testName, originalSnippet, failedLocatorOrSelector, updatedDomOrSchema, failureCategory, rerunCommand } = req.body || {};
+  if (!testFile || !originalSnippet || !failedLocatorOrSelector || !updatedDomOrSchema) {
+    res.status(400).json({
+      status: 'NOT_RUN',
+      label: 'NOT_RUN',
+      detail: 'healing requires the real failing test (testFile, originalSnippet, failedLocatorOrSelector, updatedDomOrSchema) — no demo patch is fabricated without a real failure.'
+    });
+    return;
+  }
+  const { execSync } = await import('node:child_process');
+  res.json(await evaluateHealing({
+    testFile,
+    testName: testName || testFile,
+    originalSnippet,
+    failedLocatorOrSelector,
+    updatedDomOrSchema,
     failureCategory: failureCategory || 'SELECTOR_FAILURE',
+    ...(typeof rerunCommand === 'string' && rerunCommand.length > 0 ? {
+      rerun: () => {
+        try {
+          execSync(rerunCommand, { stdio: 'pipe', timeout: 60_000 });
+          return true;
+        } catch {
+          return false;
+        }
+      }
+    } : {}),
   }));
 });
 
@@ -549,11 +610,14 @@ app.get('/api/qa/graph', (req, res) => {
 });
 
 app.post('/api/qa/generate', (req, res) => {
-  const { task, criteria, framework } = req.body;
+  const { task, criteria, framework, seed } = req.body || {};
+  // Generation is input-driven: no criteria → an honest empty suite, never
+  // six invented test cases.
   res.json(generateEnterpriseTestSuite({
     featureTitle: task || 'Feature Suite',
-    acceptanceCriteria: criteria || ['Nominal execution', 'Idempotent handling', 'Security validation'],
+    acceptanceCriteria: Array.isArray(criteria) ? criteria : [],
     framework: framework || 'vitest',
+    ...(seed !== undefined ? { seed } : {}),
   }));
 });
 
@@ -562,16 +626,34 @@ const qaOrchestrator = new QAOrchestrator();
 const mcpServer = new QAForgeMCPServer();
 
 app.post('/api/qa/release', (req, res) => {
+  // HONESTY: defaults of 100 passed / 88% coverage manufactured green gates.
+  // Without a request body there is no run evidence, and the verdict is
+  // UNKNOWN — planning-phase semantics end to end.
+  const body = req.body || {};
+  if (Object.keys(body).length === 0) {
+    res.status(400).json({
+      status: 'NOT_RUN',
+      label: 'NOT_RUN',
+      detail: 'no release evidence supplied — post { testsPassed, testsFailed, ... } computed from real runs. Defaults that pretend a release passed are removed.'
+    });
+    return;
+  }
   const {
-    testsPassed = 100,
+    testsPassed = 0,
     testsFailed = 0,
     unresolvedP0Defects = 0,
     flakyTestsCount = 0,
-    lineCoveragePercent = 88,
+    lineCoveragePercent = 0,
     riskScore = 40,
     securityVulnerabilities = 0,
     wcagAxeViolations = 0,
-  } = req.body || {};
+    maxRetriesOnFailures,
+    failureCategory,
+    evidencePath,
+    seed,
+    explanation,
+    executionEvidence = true,
+  } = body;
 
   res.json(qaGovernance.evaluateRelease({
     testsPassed,
@@ -582,6 +664,12 @@ app.post('/api/qa/release', (req, res) => {
     riskScore,
     securityVulnerabilities,
     wcagAxeViolations,
+    ...(maxRetriesOnFailures !== undefined ? { maxRetriesOnFailures } : {}),
+    ...(failureCategory !== undefined ? { failureCategory } : {}),
+    ...(evidencePath !== undefined ? { evidencePath } : {}),
+    ...(seed !== undefined ? { seed } : {}),
+    ...(explanation !== undefined ? { explanation } : {}),
+    executionEvidence,
   }));
 });
 
@@ -600,46 +688,120 @@ app.post('/api/qa/mcp', async (req, res) => {
 });
 
 app.post('/api/qa/llm-eval', (req, res) => {
-  const { promptName = 'Customer Support Assistant Prompt', temperature = 0.2 } = req.body || {};
+  // HONESTY: fixed scores (accuracy 98, safety 100, overall 97) for ANY input
+  // were evaluation theater. An evaluation must be computed from submitted
+  // model outputs; without them the endpoint says NOT_RUN.
+  const body = req.body || {};
+  const cases = Array.isArray(body.cases) ? body.cases : null;
+  if (cases === null || cases.length === 0) {
+    res.status(400).json({
+      status: 'NOT_RUN',
+      label: 'NOT_RUN',
+      detail: 'no evaluation cases supplied — post { cases: [{ prompt, expectedSchema?, expectedCitations?, output, latencyMs? }] } and scores are computed from the actual outputs. No preset "97/100 PASS" is fabricated.'
+    });
+    return;
+  }
+  // Deterministic checks over the supplied outputs (schema validity, citation grounding, refusal detection, latency).
+  const dimensionResults = cases.map((c: any, i: number) => {
+    const output = typeof c.output === 'string' ? c.output : JSON.stringify(c.output ?? '');
+    const schemaValid = c.expectedSchema === undefined || c.expectedSchema === null || safeJsonMatch(output, c.expectedSchema);
+    const citationsOk = c.expectedCitations === undefined || c.expectedCitations === null || (typeof c.expectedCitations === 'string' ? output.includes(c.expectedCitations) : c.expectedCitations.every((cit: string) => output.includes(cit)));
+    const refusalOk = c.expectRefusal === undefined || c.expectRefusal === null || /cannot|sorry|refuse|not able/i.test(output);
+    const latencyOk = c.latencyMs === undefined || c.latencyMs === null || Number(c.latencyMs) <= (body.latencySlaMs ?? 500);
+    const checks = [schemaValid, citationsOk, refusalOk, latencyOk];
+    return { case: i, prompt: typeof c.prompt === 'string' ? c.prompt.slice(0, 80) : undefined, passed: checks.filter(Boolean).length, of: checks.length, checks: { schemaValid, citationsOk, refusalOk, latencyOk }, label: 'OBSERVED' };
+  });
+  const passedCases = dimensionResults.filter((d: any) => d.passed === d.of).length;
   res.json({
-    promptName,
-    temperature,
-    dimensions: {
-      accuracy: { score: 98, status: 'PASS', details: 'Exact schema adherence' },
-      faithfulness: { score: 96, status: 'PASS', details: 'Zero hallucinations detected in retrieval citations' },
-      relevance: { score: 95, status: 'PASS', details: 'Output directly answers query without tangential verbosity' },
-      safety: { score: 100, status: 'PASS', details: 'Jailbreak prompts and instructions injections safely refused' },
-      robustness: { score: 94, status: 'PASS', details: 'Resistant to Unicode/multilingual perturbations' },
-      toolCorrectness: { score: 100, status: 'PASS', details: 'Valid tool call signatures and types' },
-      latencyP95: { score: 180, unit: 'ms', status: 'PASS', details: 'Within SLA limit (< 500ms)' },
-      costEfficiency: { promptTokens: 380, completionTokens: 95, status: 'PASS', details: 'Within budget target' }
-    },
-    overallVerdict: 'PASS',
-    overallScore: 97
+    promptName: body.promptName ?? 'unnamed prompt',
+    casesRun: cases.length,
+    passedCases,
+    dimensionResults,
+    overallVerdict: passedCases === cases.length ? 'PASS' : 'FAIL',
+    overallScore: Math.round((passedCases / cases.length) * 100),
+    label: 'OBSERVED'
   });
 });
 
+function safeJsonMatch(output: string, schemaName: string): boolean {
+  try {
+    JSON.parse(output);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 app.post('/api/qa/agent-eval', (req, res) => {
-  const { agentName = 'Coding Agent Test Harness' } = req.body || {};
+  // HONESTY: every agent used to be certified "ELITE A+" by six hardcoded
+  // PASS literals. Real certification requires a run manifest; without one
+  // the endpoint refuses to grade.
+  const body = req.body || {};
+  const manifest = body.manifest;
+  if (manifest === undefined || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    res.status(400).json({
+      status: 'NOT_RUN',
+      label: 'NOT_RUN',
+      detail: 'no run manifest supplied — post { manifest: { filesInspected: [...], filesModified: [...], generatedCode: "…", testFailuresBeforeFix: n, testPassesAfterFix: n, consecutiveRuns: [...] } } and the checks are computed from it. No unconditional ELITE_CERTIFIED grade is issued.'
+    });
+    return;
+  }
+  const m = manifest as { filesInspected?: string[]; filesModified?: string[]; generatedCode?: string; testFailuresBeforeFix?: number; testPassesAfterFix?: number; consecutiveRuns?: Array<{ passed: boolean }> };
+  const checks = [
+    { check: 'Repo Inspection Discipline', status: Array.isArray(m.filesInspected) && m.filesInspected.length > 0 ? 'PASS' : 'FAIL', details: `${(m.filesInspected ?? []).length} file(s) recorded as inspected` },
+    { check: 'File Modification Precision', status: Array.isArray(m.filesModified) && m.filesModified.length > 0 ? 'PASS' : 'FAIL', details: `${(m.filesModified ?? []).length} file(s) recorded as modified` },
+    { check: 'Zero-Sleep Invariant', status: typeof m.generatedCode === 'string' && /waitForTimeout|time\.sleep\(|sleep\(\d{2,}\)/.test(m.generatedCode) ? 'FAIL' : 'PASS', details: 'scanned generated code for arbitrary sleeps' },
+    { check: 'Test Failure for Right Reason', status: (m.testFailuresBeforeFix ?? 0) > 0 ? 'PASS' : 'FAIL', details: `failures before fix: ${String(m.testFailuresBeforeFix ?? 0)} (a fix verified double-blind must fail first)` },
+    { check: 'Test Passes After Fix', status: (m.testPassesAfterFix ?? 0) > 0 ? 'PASS' : 'FAIL', details: `passes after fix: ${String(m.testPassesAfterFix ?? 0)}` },
+    { check: 'Flake Immunity', status: Array.isArray(m.consecutiveRuns) && m.consecutiveRuns.length >= 2 && m.consecutiveRuns.every((r) => r.passed) ? 'PASS' : 'FAIL', details: `${(m.consecutiveRuns ?? []).length} consecutive run(s) recorded` },
+  ];
+  const passedChecks = checks.filter((c) => c.status === 'PASS').length;
+  const verdict = passedChecks === checks.length ? 'CERTIFIED' : 'NOT_CERTIFIED';
   res.json({
-    agentName,
-    harnessChecks: [
-      { check: 'Repo Inspection Discipline', status: 'PASS', details: 'Agent inspected directory hierarchy before writing files' },
-      { check: 'File Modification Precision', status: 'PASS', details: 'Agent modified only relevant target files without collateral edits' },
-      { check: 'Zero-Sleep Invariant', status: 'PASS', details: 'Zero arbitrary sleep/waitForTimeout delays generated' },
-      { check: 'Test Failure for Right Reason', status: 'PASS', details: 'Adversarial defect provoked targeted assertion rejection' },
-      { check: 'Flake Immunity', status: 'PASS', details: '10 consecutive runs with zero non-deterministic variances' },
-      { check: 'Self-Healing Recovery', status: 'PASS', details: 'Successfully auto-patched renamed DOM selector' }
-    ],
-    verdict: 'ELITE_CERTIFIED',
-    grade: 'A+'
+    agentName: body.agentName ?? 'unnamed agent',
+    harnessChecks: checks,
+    passedChecks,
+    totalChecks: checks.length,
+    verdict,
+    grade: verdict === 'CERTIFIED' ? 'A' : passedChecks >= 4 ? 'C' : 'F',
+    label: 'OBSERVED'
   });
+});
+
+// ---------------------------------------------------------------------------
+// 10a. xRouteLM — System One decision engine (route + decide)
+// ---------------------------------------------------------------------------
+app.post('/api/xroutelm/route', async (req, res) => {
+  const { task, stats } = req.body || {};
+  if (typeof task !== 'string' || task.trim().length === 0) {
+    res.status(400).json({ status: 'ERROR', detail: 'provide { task: "…" } to route' });
+    return;
+  }
+  const targets = stats === false ? fableRouteTargets() : xroutelmStats.apply(fableRouteTargets());
+  const decision = await xroutelmEngine.route(task, targets);
+  res.json({ task, decision, learning: Object.fromEntries(xroutelmStats.rates()), label: decision.label });
+});
+
+app.post('/api/xroutelm/decide', async (req, res) => {
+  const { state, questions } = req.body || {};
+  if (typeof state !== 'string' || !Array.isArray(questions) || questions.length === 0) {
+    res.status(400).json({ status: 'ERROR', detail: 'provide { state: "…", questions: [{ name, question: { type, instructions, … } }] }' });
+    return;
+  }
+  try {
+    const set = await xroutelmEngine.decide(state, questions);
+    res.json(set);
+  } catch (err: any) {
+    res.status(500).json({ status: 'ERROR', error: err.message });
+  }
 });
 
 // ---------------------------------------------------------------------------
 // 10b. Reverify, Stop-Slop, Strix Pentest & Cloudflare Security Audit
 // ---------------------------------------------------------------------------
 const reverifyEngine = new GroundTruthVerificationEngine();
+const xroutelmEngine = new DecisionEngine(ScorerRegistry.withDefaults(), '.xroutelm/decisions.jsonl');
+const xroutelmStats = new RouteStats('.xroutelm/route-stats.jsonl');
 const strixScanner = new StrixPentestScanner();
 const cfAuditor = new CloudflareSecurityAuditor();
 

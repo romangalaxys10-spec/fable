@@ -84,15 +84,22 @@ export class QAOrchestrator {
       acceptanceCriteria: ['Nominal execution path', 'Invalid payload rejection', 'Idempotent processing']
     });
 
+    // HONESTY FIX: the previous orchestration fabricated "testsPassed: 42,
+    // lineCoveragePercent: 88" and a green release verdict for a run in which
+    // NOTHING had executed. The governance agent now receives only what is
+    // actually known at planning time and marks execution evidence as absent,
+    // which yields verdict 'UNKNOWN' until real runs supply numbers.
     const governanceVerdict = this.governance.evaluateRelease({
-      testsPassed: 42,
+      testsPassed: 0,
       testsFailed: 0,
       unresolvedP0Defects: 0,
       flakyTestsCount: 0,
-      lineCoveragePercent: 88,
+      lineCoveragePercent: 0,
       riskScore: risk.score,
       securityVulnerabilities: 0,
-      wcagAxeViolations: 0
+      wcagAxeViolations: 0,
+      executionEvidence: false,
+      explanation: `Orchestration plan for "${task}" at risk ${risk.score}/100 — planning phase only; no tests have executed, so no release verdict can be positive yet.`
     });
 
     return {

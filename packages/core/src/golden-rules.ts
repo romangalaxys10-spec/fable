@@ -110,37 +110,76 @@ export const GOLDEN_RULES: GoldenRule[] = [
     id: 10,
     name: 'Defect Categorization',
     summary: 'Always distinguish product defects from test defects.',
-    check: () => ({ pass: true })
+    check: (op, payload) => {
+      const category = payload?.failureCategory ?? payload?.category;
+      if (op === 'triage' && (category === undefined || category === 'UNKNOWN')) {
+        return { pass: false, violation: 'Triage verdict missing a concrete failure category (product vs test defect unresolved).' };
+      }
+      if (payload?.status === 'CONFIRMED' && (category === undefined || category === 'UNKNOWN')) {
+        return { pass: false, violation: 'CONFIRMED claim without a failure category — product-defect vs test-defect distinction not recorded.' };
+      }
+      return { pass: true };
+    }
   },
   {
     id: 11,
     name: 'Minimal Defect Catcher',
     summary: 'Prefer the smallest test that catches the defect.',
-    check: () => ({ pass: true })
+    check: (op, payload) => {
+      if (op === 'generate' && typeof payload?.e2eCount === 'number' && typeof payload?.unitCount === 'number') {
+        const total = payload.e2eCount + payload.unitCount + (payload.integrationCount ?? 0);
+        if (total > 0 && payload.e2eCount / total > 0.4) {
+          return { pass: false, violation: 'Generated suite is E2E-heavy — the smallest catching test would live at a lower layer.' };
+        }
+      }
+      return { pass: true };
+    }
   },
   {
     id: 12,
     name: 'Deterministic Reproducibility',
     summary: 'Preserve reproducibility with fixed seeds and explicit clocks.',
-    check: () => ({ pass: true })
+    check: (op, payload) => {
+      if ((op === 'generate' || op === 'heal') && payload?.seed === undefined) {
+        return { pass: false, violation: 'Generated or healed artifact carries no seed — the run cannot be reproduced.' };
+      }
+      return { pass: true };
+    }
   },
   {
     id: 13,
     name: 'Evidence Retention',
     summary: 'Preserve evidence bundles (traces, screenshots, console logs, network diffs).',
-    check: () => ({ pass: true })
+    check: (op, payload) => {
+      if (op === 'test' && payload?.status === 'failed' && payload?.evidencePath === undefined) {
+        return { pass: false, violation: 'Failed execution reported without an evidence bundle path — history cannot be re-verified.' };
+      }
+      return { pass: true };
+    }
   },
   {
     id: 14,
     name: 'Transparent Explainability',
     summary: 'Explain important decisions (input, objective, evidence, confidence, fallback).',
-    check: () => ({ pass: true })
+    check: (op, payload) => {
+      if ((op === 'triage' || op === 'heal' || op === 'release') &&
+          payload?.rationale === undefined && payload?.explanation === undefined &&
+          !Array.isArray(payload?.evidence)) {
+        return { pass: false, violation: 'Decision emitted without rationale, explanation, or evidence — unexplainable verdicts are prohibited.' };
+      }
+      return { pass: true };
+    }
   },
   {
     id: 15,
     name: 'Signal Optimization',
     summary: 'Optimize for signal, not test count.',
-    check: () => ({ pass: true })
+    check: (op, payload) => {
+      if (op === 'generate' && typeof payload?.totalGenerated === 'number' && payload.totalGenerated > 500) {
+        return { pass: false, violation: 'Generation emitted a huge suite — bulk volume without selection discipline is noise, not signal.' };
+      }
+      return { pass: true };
+    }
   }
 ];
 

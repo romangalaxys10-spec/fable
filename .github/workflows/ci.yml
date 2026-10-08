@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm run lint
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm test
+
+  anti-fabrication-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: No hardcoded victory constants
+        run: |
+          # The original codebase hardcoded results (simulatedVulnerable=false,
+          # passed: targets.length, flakeScore: 78). These patterns must never
+          # return IN CODE. Comment lines (* or //) and honest refusal strings
+          # that document the removed fakes are excluded.
+          HITS=$(grep -rnE "const simulatedVulnerable|passed: targets\.length|flakeScore: 78|accuracy: 98|grade: .?ELITE_CERTIFIED" packages/ server.ts --include="*.ts" | grep -vE ':[0-9]+:\s*(\*|//|/\*)' || true)
+          if [ -n "$HITS" ]; then
+            echo "::error::Fabricated-result pattern detected in source"
+            echo "$HITS"
+            exit 1
+          else
+            echo "OK: no fabricated-result patterns in executable code"
+          fi
+      - name: Every test reports honestly
+        run: npm test

@@ -37,6 +37,17 @@ export interface ClusteredTriageReport {
   }[];
 }
 
+
+/**
+ * Confidence is DERIVED from the failure's own signal record, not a constant:
+ * +6 per supporting signal, +4 per evidence item, −9 per contradicting
+ * signal, clamped to [40, 97]. The rule order decides the CATEGORY; the
+ * signals decide how much the verdict deserves.
+ */
+function signalConfidence(supporting: string[], evidence: string[], contradicting: string[]): number {
+  return Math.max(40, Math.min(97, 60 + 6 * supporting.length + 4 * evidence.length - 9 * contradicting.length));
+}
+
 export function triageSingleFailure(failure: RawFailureInput): TriageResult {
   const err = (failure.errorMessage || '').toLowerCase();
   const stack = (failure.stackTrace || '').toLowerCase();

@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Runtime data journals (local learning state, not source)
+.xroutelm/
+.qaforge/
+corpus.jsonl
+route-stats.jsonl
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# Logs & OS noise
+*.log
+npm-debug.log*
+.DS_Store
