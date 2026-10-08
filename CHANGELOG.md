@@ -13,9 +13,12 @@ All notable changes to the Fable plugin and experience studio are documented in 
 - **Universal Task Router & CLI Integration**:
   - Upgraded `scripts/route.py` with intelligent routing rules and execution steps for `reverify`, `stop_slop`, `strix_pentest`, and `cf_security_audit`.
   - Expanded `packages/cli/src/index.ts` to support 20 commands: added `qa reverify`, `qa slop`, `qa strix`, and `qa sec-audit`.
+- **Quality Traceability Matrix (`packages/reporting/src/matrix.ts`)**:
+  - Added `qa matrix` CLI command (bringing total CLI subcommands to 21).
+  - Automatically maps requirements to test cases across all 4 test quadrants (Positive, Negative, Boundary, Security) with verification status and risk tiers.
 - **Zero-Config Token & Key Bypass Engine (`packages/core/src/zero-config.ts`)**:
   - Engineered a transparent proxy and offline simulation fallback layer (`ZeroConfigBypass`).
-  - Ensures all 20 CLI commands, 28 skills, DAST scanners, security audits, and token efficiency protocols execute with **zero required API keys, external tokens, or cloud registrations**.
+  - Ensures all 21 CLI commands, 28 skills, DAST scanners, security audits, and token efficiency protocols execute with **zero required API keys, external tokens, or cloud registrations**.
 
 ## [v2.0.0] — 2026-10-07 — qaforge: AI-Native QA Operating System
 

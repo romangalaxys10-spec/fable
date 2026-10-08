@@ -130,7 +130,7 @@
    - Test Data Engineering: `SeedGenerator` (linear congruential deterministic RNG), `TestDataFactory`, `UserFixtureBuilder`, `OrderFixtureBuilder`, and PII/token `DataMasker`.
 
 7. **`packages/reporting/`**:
-   - Multi-channel enterprise reporting: `generateJUnitXml`, `formatAllureResult`, `formatSlackQualityPayload`, `formatJiraDefectPayload`, `formatGitHubStepSummary`, and `formatGitLabCodeQuality`.
+   - Multi-channel enterprise reporting: `generateJUnitXml`, `formatAllureResult`, `formatSlackQualityPayload`, `formatJiraDefectPayload`, `formatGitHubStepSummary`, `formatGitLabCodeQuality`, and **Quality Traceability Matrix (`qa matrix`)**.
 
 8. **`packages/reasoning/`**:
    - `MultiModelReasoningRouter` enforcing **Deterministic-First, AI-Second** discipline with full explainability records (`input`, `objective`, `evidence`, `output`, `confidence`, `fallback`).

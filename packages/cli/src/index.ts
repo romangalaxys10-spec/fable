@@ -13,6 +13,7 @@ import { buildStandardQualityGraph } from '../../graph/src/quality-graph';
 import { getRunner } from '../../runners/src';
 import { generateJUnitXml } from '../../reporting/src/junit';
 import { formatGitHubStepSummary } from '../../reporting/src/github';
+import { generateTraceabilityMatrixMarkdown } from '../../reporting/src/matrix';
 import { GroundTruthVerificationEngine } from '../../reverify/src';
 import { evaluateTextForSlop } from '../../stop-slop/src';
 import { StrixPentestScanner } from '../../strix/src';
@@ -351,6 +352,19 @@ export async function runCLI(args: string[]) {
       break;
     }
 
+    case 'matrix': {
+      const matrixMarkdown = generateTraceabilityMatrixMarkdown([
+        { id: 'REQ-01', title: 'User Checkout & Stripe Payment', riskTier: 'CRITICAL', quadrantsCovered: ['POSITIVE', 'NEGATIVE', 'SECURITY'], linkedTestIds: ['TC-1', 'TC-2'], status: 'VERIFIED' },
+        { id: 'REQ-02', title: 'JWT Authentication & Session Refresh', riskTier: 'HIGH', quadrantsCovered: ['POSITIVE', 'BOUNDARY'], linkedTestIds: ['TC-3'], status: 'VERIFIED' }
+      ]);
+      if (isJson) {
+        console.log(JSON.stringify({ matrixMarkdown }, null, 2));
+      } else {
+        log(matrixMarkdown);
+      }
+      break;
+    }
+
     case 'explain': {
       const claim = {
         input: 'Payment boundary refactored to use Stripe v2026',
@@ -476,9 +490,9 @@ export async function runCLI(args: string[]) {
     default: {
       log(`qaforge AI-Native QA Operating System CLI`);
       log(`Usage: qa <command> [--json] [--dry-run] [--quiet] [--verbose]`);
-      log(`Commands (20):`);
+      log(`Commands (21):`);
       log(`  init | discover | plan | risk | generate | review | test | impact`);
-      log(`  triage | heal | flake | coverage | release | report | doctor | explain`);
+      log(`  triage | heal | flake | coverage | release | report | matrix | doctor | explain`);
       log(`  reverify | slop | strix | sec-audit`);
     }
   }
